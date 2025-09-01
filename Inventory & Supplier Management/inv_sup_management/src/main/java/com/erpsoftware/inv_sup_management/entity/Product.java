@@ -10,36 +10,31 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-
 @Data
 @Entity
-@Table(name = "purchase_orders")
-public class Purchase_orders {
+@Table(name = "products")
+public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column
-    private Integer supplier_id;
+    private String sku;
     @Column
-    private String status;
+    private String name;
+    @Column
+    private String category;
+    @Column
+    private String brand;
+    @Column
+    private Double cost_price;
+    @Column
+    private Double selling_price;
+    @Column
+    private Integer quantity;
+    @Column
+    private Integer low_stock_threshold;
     @Column(insertable = false)
     private Timestamp created_at;
     @Column(insertable = false)
     private Timestamp updated_at;
-    
-    public Timestamp getCreated_at() {
-        return created_at;
-    }
-    public Integer getId() {
-        return id;
-    }
-    public String getStatus() {
-        return status;
-    }
-    public Integer getSupplier_id() {
-        return supplier_id;
-    }
-    public Timestamp getUpdated_at() {
-        return updated_at;
-    }
 }

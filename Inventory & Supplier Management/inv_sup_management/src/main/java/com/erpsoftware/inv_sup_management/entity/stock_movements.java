@@ -5,40 +5,45 @@ import java.sql.Timestamp;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Data;
 
-@Entity(name = "stock_movements")
-public class stock_movements {
+@Data
+@Entity
+@Table(name = "stock_movements")
+public class Stock_movements {
     @Id
-    @GeneratedValue
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     @Column
-    private int product_id;
+    private Integer product_id;
     @Column
-    private int change;
+    private Integer change;
     @Column
     private String reason;
     @Column
-    private int source_id;
-    @Column
+    private Integer source_id;
+    @Column(insertable = false)
     private Timestamp created_at;
 
-    public int getChange() {
+    public Integer getChange() {
         return change;
     }
     public Timestamp getCreated_at() {
         return created_at;
     }
-    public int getId() {
+    public Integer getId() {
         return id;
     }
-    public int getProduct_id() {
+    public Integer getProduct_id() {
         return product_id;
     }
     public String getReason() {
         return reason;
     }
-    public int getSource_id() {
+    public Integer getSource_id() {
         return source_id;
     }
 }

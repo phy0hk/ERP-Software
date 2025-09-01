@@ -5,13 +5,19 @@ import java.sql.Timestamp;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Data;
 
+
+@Data
 @Entity
-public class suppliers {
+@Table(name = "suppliers")
+public class Suppliers {
     @Id
-    @GeneratedValue
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     @Column
     private String name;
     @Column
@@ -24,9 +30,9 @@ public class suppliers {
     private String address;
     @Column 
     private String notes;
-    @Column 
+    @Column(insertable = false)
     private Timestamp created_at; 
-    @Column 
+    @Column(insertable = false)
     private Timestamp updated_at; 
 
     
@@ -42,7 +48,7 @@ public class suppliers {
     public String getEmail() {
         return email;
     }
-    public int getId() {
+    public Integer getId() {
         return id;
     }
     public String getName() {
