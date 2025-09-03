@@ -8,9 +8,10 @@ import org.springframework.stereotype.Service;
 
 import com.erpsoftware.inv_sup_management.entity.Product;
 import com.erpsoftware.inv_sup_management.repo.ProductsRepository;
+import com.erpsoftware.inv_sup_management.services.Interfaces.ProductServicesInterface;
 
 @Service
-public class ProductServices {
+public class ProductServices implements ProductServicesInterface{
     @Autowired
     private ProductsRepository productsRepository;
 
@@ -19,11 +20,13 @@ public class ProductServices {
         return allProducts;
     }
 
+    @Override
     public Product getProduct(int productID) {
         Product product = productsRepository.findById(productID).orElse(null);
         return product;
     }
 
+    @Override
     public Product createProduct(Product data) {
         try {
             return productsRepository.save(data);
@@ -33,6 +36,7 @@ public class ProductServices {
         }
     }
 
+    @Override
     public Product updateProduct(Product data) {
         try {
             Product existing = productsRepository.findBySku(data.getSku());

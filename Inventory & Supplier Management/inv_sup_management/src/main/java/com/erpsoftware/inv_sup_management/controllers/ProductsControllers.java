@@ -4,27 +4,29 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.erpsoftware.inv_sup_management.entity.Product;
+import com.erpsoftware.inv_sup_management.security.AuthGuard;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import com.erpsoftware.inv_sup_management.services.ProductServices;
+import com.erpsoftware.inv_sup_management.services.Interfaces.ProductServicesInterface;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @RequestMapping("/api/v1")
+@AuthGuard
 public class ProductsControllers {
-
-    private final ProductServices productServices;
-
-    public ProductsControllers(ProductServices productServices) {
+    
+    private final ProductServicesInterface productServices;
+    
+    public ProductsControllers(ProductServicesInterface productServices) {
         this.productServices = productServices;
     }
-
+    
     // Get products from db
     @GetMapping("/products")
     public StatusResponder<List<Product>> getMethodName() {
