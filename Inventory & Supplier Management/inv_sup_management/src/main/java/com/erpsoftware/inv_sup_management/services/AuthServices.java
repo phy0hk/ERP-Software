@@ -39,8 +39,6 @@ public class AuthServices implements AuthServicesInterface{
         JsonObject json = Json.createObjectBuilder().add("email", admEmail).add("password", admPassword).build();
         try {
             String token = jwt.exp("1m").create(json.toString(), Secret);
-            System.out.println(jwt.getClaims(token, Secret));
-            System.out.println(jwt.decode(token, Secret));
             return token;
         } catch (Exception e) {
             throw new RuntimeException("Failed to create token");
@@ -54,7 +52,7 @@ public class AuthServices implements AuthServicesInterface{
     }
 
     @Override
-    public boolean CheckAuth() {
+    public String CheckAuth() {
         Cookie[] cookies = request.getCookies();
         String token = null;
         if(cookies != null){
@@ -65,7 +63,8 @@ public class AuthServices implements AuthServicesInterface{
             }
         }
         if(token!=null){
-            System.out.println(jwt.getClaims(token, Secret));
+            System.out.println(jwt.getClaims(token));
+            System.out.println(jwt.verify(token, Secret));
             return jwt.verify(token, Secret);
         }
         throw new ApiAuthException("Unauthorized", 401);

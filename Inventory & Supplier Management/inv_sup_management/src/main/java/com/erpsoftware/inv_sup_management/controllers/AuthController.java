@@ -65,10 +65,11 @@ public class AuthController {
 
     @RequestMapping("/check")
     public ResMessage check(){
-        if(authServices.CheckAuth()){
+        String checkAuthRes = authServices.CheckAuth();
+        if(checkAuthRes.equals("ok")){
             return new ResMessage("ok","Authorized");
         }
-        return new ResMessage("bad", "Unauthorized");
+        return new ResMessage("401", checkAuthRes);
     }
     
 

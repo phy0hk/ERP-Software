@@ -47,17 +47,15 @@ public class AuthGuardAspet {
             for(Cookie cookie:cookies){
                 if(cookie.getName().equals("token")){
                     token = cookie.getValue();
+                    String verifyRes = jwt.verify(token, Secret);
+                    if(!verifyRes.equals("ok")){
+            throw new ApiAuthException(verifyRes, 401);
+                    }
                 }
             }
         }
         if (token == null) {
-            String p1 = new Product("Coffee").toString();
-            String Jwttoken = jwt.create(p1, Secret);
-            System.out.println(jwt.getClaims(Jwttoken, Secret));
-            System.out.println(Jwttoken);
-            System.out.println(jwt.decode(Jwttoken, Secret));
-
-            throw new ApiAuthException("Unauthorized", 401);
+            throw new ApiAuthException("Token not found", 401);
         } else {
 
         }
