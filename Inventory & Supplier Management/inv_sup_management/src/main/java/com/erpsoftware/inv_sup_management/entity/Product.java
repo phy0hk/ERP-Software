@@ -17,21 +17,21 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column
+    @Column(nullable = false)
     private String sku;
-    @Column
+    @Column(nullable = false)
     private String name;
-    @Column
+    @Column(nullable = false)
     private String category;
-    @Column
+    @Column(nullable = false)
     private String brand;
-    @Column
+    @Column(nullable = false)
     private Double cost_price;
-    @Column
+    @Column(nullable = false)
     private Double selling_price;
-    @Column
+    @Column(nullable = false)
     private Integer quantity;
-    @Column
+    @Column(nullable = false)
     private Integer low_stock_threshold;
     @Column(insertable = false)
     private Timestamp created_at;

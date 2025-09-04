@@ -7,8 +7,11 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
+
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.servlet.http.Cookie;
@@ -16,10 +19,14 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @Aspect
 @Component
+@Primary
 public class AuthGuardAspet {
 
     @Value("${SECRET_KEY}")
     private String Secret;
+
+    @Autowired
+    private TokenService tokenService;
 
     @Autowired
     private HttpServletRequest request;
@@ -41,13 +48,12 @@ public class AuthGuardAspet {
 
     private void validateRequest(AuthGuard authGuard) throws Exception {
         Cookie[] cookies = request.getCookies();
-        JWT jwt = new JWT();
         String token = null;
         if(cookies != null){
             for(Cookie cookie:cookies){
                 if(cookie.getName().equals("token")){
                     token = cookie.getValue();
-                    String verifyRes = jwt.verify(token, Secret);
+                    String verifyRes = tokenService.verify(token, Secret);
                     if(!verifyRes.equals("ok")){
             throw new ApiAuthException(verifyRes, 401);
                     }

@@ -1,11 +1,13 @@
 package com.erpsoftware.inv_sup_management.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.erpsoftware.inv_sup_management.security.ApiAuthException;
 import com.erpsoftware.inv_sup_management.security.JWT;
+import com.erpsoftware.inv_sup_management.security.TokenService;
 import com.erpsoftware.inv_sup_management.services.Interfaces.AuthServicesInterface;
 
 import jakarta.json.Json;
@@ -18,7 +20,9 @@ public class AuthServices implements AuthServicesInterface{
 
     private String admEmail = "admin@email.com";
     private String admPassword = "Admin123";
-    private JWT jwt = new JWT();
+    
+    @Autowired
+    private TokenService tokenService;
 
     @Value("${SECRET_KEY}")
     private String Secret;
@@ -38,7 +42,7 @@ public class AuthServices implements AuthServicesInterface{
     public String getToken(String email) {
         JsonObject json = Json.createObjectBuilder().add("email", admEmail).add("password", admPassword).build();
         try {
-            String token = jwt.exp("1m").create(json.toString(), Secret);
+            String token = tokenService.create(json.toString(), Secret);
             return token;
         } catch (Exception e) {
             throw new RuntimeException("Failed to create token");
@@ -47,7 +51,6 @@ public class AuthServices implements AuthServicesInterface{
 
     @Override
     public boolean Register(String email, String password) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'Register'");
     }
 
@@ -63,9 +66,11 @@ public class AuthServices implements AuthServicesInterface{
             }
         }
         if(token!=null){
-            System.out.println(jwt.getClaims(token));
-            System.out.println(jwt.verify(token, Secret));
-            return jwt.verify(token, Secret);
+            try {
+                return tokenService.verify(token, Secret);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         throw new ApiAuthException("Unauthorized", 401);
     }

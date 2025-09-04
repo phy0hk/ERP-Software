@@ -2,6 +2,8 @@ package com.erpsoftware.inv_sup_management.entity;
 
 import java.sql.Timestamp;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,33 +19,16 @@ public class Stock_movements {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column
+    @Column(nullable = false)
     private Integer product_id;
-    @Column
+    @Column(nullable = false)
     private Integer change;
-    @Column
+    @Column(nullable = false)
     private String reason;
-    @Column
+    @Column(nullable = false)
     private Integer source_id;
+    @CreationTimestamp
     @Column(insertable = false)
     private Timestamp created_at;
 
-    public Integer getChange() {
-        return change;
-    }
-    public Timestamp getCreated_at() {
-        return created_at;
-    }
-    public Integer getId() {
-        return id;
-    }
-    public Integer getProduct_id() {
-        return product_id;
-    }
-    public String getReason() {
-        return reason;
-    }
-    public Integer getSource_id() {
-        return source_id;
-    }
 }

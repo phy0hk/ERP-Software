@@ -8,5 +8,6 @@ public interface ProductServicesInterface {
     List<Product> getAllProducts();
     Product getProduct(int productID);
     Product createProduct(Product data);
-    Product updateProduct(Product data);
+    Product updateProduct(Product data,int id);
+    Boolean deleteProduct(int id);
 }

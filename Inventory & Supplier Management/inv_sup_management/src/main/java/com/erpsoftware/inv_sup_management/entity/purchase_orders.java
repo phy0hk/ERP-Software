@@ -2,6 +2,9 @@ package com.erpsoftware.inv_sup_management.entity;
 
 import java.sql.Timestamp;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,28 +21,14 @@ public class Purchase_orders {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column
+    @Column(nullable = false)
     private Integer supplier_id;
-    @Column
+    @Column(nullable = false)
     private String status;
+    @CreationTimestamp
     @Column(insertable = false)
     private Timestamp created_at;
+    @UpdateTimestamp
     @Column(insertable = false)
     private Timestamp updated_at;
-    
-    public Timestamp getCreated_at() {
-        return created_at;
-    }
-    public Integer getId() {
-        return id;
-    }
-    public String getStatus() {
-        return status;
-    }
-    public Integer getSupplier_id() {
-        return supplier_id;
-    }
-    public Timestamp getUpdated_at() {
-        return updated_at;
-    }
 }

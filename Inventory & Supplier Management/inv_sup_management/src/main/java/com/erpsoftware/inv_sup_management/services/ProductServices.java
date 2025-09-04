@@ -37,9 +37,9 @@ public class ProductServices implements ProductServicesInterface{
     }
 
     @Override
-    public Product updateProduct(Product data) {
+    public Product updateProduct(Product data,int id) {
         try {
-            Product existing = productsRepository.findBySku(data.getSku());
+            Product existing = productsRepository.findById(id).orElse(productsRepository.findBySku(data.getSku()));
             if (existing == null)
                 return null;
             if (data.getName() != null)
@@ -62,6 +62,18 @@ public class ProductServices implements ProductServicesInterface{
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    @Override
+    public Boolean deleteProduct(int id){
+        try {
+            Product product = productsRepository.findById(id).orElseThrow(() -> new RuntimeException("Not found"));
+            productsRepository.delete(product);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }

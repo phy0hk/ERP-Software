@@ -16,33 +16,14 @@ public class Purchase_order_items {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column
+    @Column(nullable = false)
     private Integer order_id;
-    @Column
+    @Column(nullable = false)
     private Integer product_id;
-    @Column
+    @Column(nullable = false)
     private Integer quantity;
-    @Column
+    @Column(nullable = false)
     private double price;
-    @Column
+    @Column(nullable = false)
     private Integer received_quantity;
-
-    public Integer getId() {
-        return id;
-    }
-    public Integer getOrder_id() {
-        return order_id;
-    }
-    public double getPrice() {
-        return price;
-    }
-    public Integer getProduct_id() {
-        return product_id;
-    }
-    public Integer getQuantity() {
-        return quantity;
-    }
-    public Integer getReceived_quantity() {
-        return received_quantity;
-    }
 }

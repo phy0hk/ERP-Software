@@ -11,34 +11,25 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.Data;
 
-
-@Data
 @Entity
-@Table(name = "suppliers")
-public class Suppliers {
+@Table(name = "product_category")
+public class ProductCategory {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(nullable = false)
-    private String name;
-    @Column(nullable = false)
-    private String contact_name;
-    @Column(nullable = false)
-    private String phone;
-    @Column(nullable = false)
-    private String email;
-    @Column
-    private String address;
-    @Column
-    private String notes;
-    @CreationTimestamp
-    @Column(insertable = false)
-    private Timestamp created_at; 
-    @UpdateTimestamp
-    @Column(insertable = false)
-    private Timestamp updated_at; 
 
-    
+    @Column(nullable = false, unique = true)
+    private String name;
+    @Column
+    private String description;
+    @CreationTimestamp
+    @Column(updatable = false)
+    private Timestamp createdAt;
+
+    @UpdateTimestamp
+    private Timestamp updatedAt;
+
+    // Getters and setters
 }

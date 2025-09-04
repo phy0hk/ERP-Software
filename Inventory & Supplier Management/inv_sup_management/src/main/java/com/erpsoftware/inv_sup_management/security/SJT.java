@@ -1,5 +1,6 @@
 package com.erpsoftware.inv_sup_management.security;
 import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -11,9 +12,13 @@ import javax.crypto.Cipher;
 import javax.crypto.Mac;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+
+import org.springframework.stereotype.Service;
+
 import jakarta.json.*;
 
-public class JWST {
+@Service("SecureJsonToken")
+public class SJT implements TokenService{
     private byte[] iv;
     private Map<String,String> claims = new HashMap<>();
     private ArrayList<String> claimsKeys = new ArrayList<>();
@@ -25,51 +30,57 @@ public class JWST {
     }
 
     public byte[] decodeIv(String ivString){
-        byte[] base64Byte = Base64.getDecoder().decode(ivString);
+        byte[] base64Byte = Base64.getUrlDecoder().decode(ivString);
         return base64Byte;
     }
     
-    public Boolean verify(String token,String secret){
+    @Override
+    public String verify(String token,String secret) throws Exception{
+        if(!checkHeader(token)){
+            throw new ApiAuthException("Token algorithm mismatch", 401);
+        }
         if(verifySignature(token, secret)){
-            String decodedClaims = getClaims(token, secret);
-            try(JsonReader reader = Json.createReader(new StringReader(decodedClaims))){
+          String decodedClaims = getClaims(token, secret);
+            try (JsonReader reader = Json.createReader(new StringReader(decodedClaims))) {
                 JsonObject jsonObj = reader.readObject();
-                String expStr = jsonObj.get("exp").toString().replace("\"","");
+                String expStr = jsonObj.getString("exp");
                 Long exp = Long.parseLong(expStr);
-                Long currentTime = System.currentTimeMillis();
-                if(!jsonObj.isNull("nbf")){
-                    Long nbf = Long.parseLong(jsonObj.getString("nbf").toString());
-                    if(nbf>currentTime){
-                        return false;
+                Long now = System.currentTimeMillis();
+                if (jsonObj.containsKey("nbf")&&!jsonObj.isNull("nbf")) {
+                    String nbfStr = jsonObj.getString("nbf");
+            long nbf = Long.parseLong(nbfStr);
+                    if (nbf > now) {
+                        return "Token is not yet valid";
                     }
                 }
-                if(exp==0){
-                    return true;
-                }else if(currentTime>exp){
-                        return false;
-                }else{
-                        return true;
+                if (exp == 0) {
+                    return "ok";
+                } else if (now > exp) {
+                    return "Token Expired";
+                } else {
+                    return "ok";
                 }
             }
         }else{
-            return false;
+            throw new ApiAuthException("Invalid Token", 401);
         }
     }
 
-
+    @Override
     public String create(String data,String secret) throws Exception{
         CreateRandomBytes();
         String header = createHeader();
-        String base64Header = Base64.getEncoder().encodeToString(header.getBytes("UTF-8"));
+        String base64Header = Base64.getUrlEncoder().withoutPadding().encodeToString(header.getBytes("UTF-8"));
         String claimsBody = createClaims();
         JsonObject payloadJson = Json.createObjectBuilder().add("data", data).add("claims", claimsBody).build();
         String payload = Encrypt(payloadJson.toString(), secret);
-        String base64iv = Base64.getEncoder().encodeToString(iv);
+        String base64iv = Base64.getUrlEncoder().withoutPadding().encodeToString(iv);
         String signature = createSignature(base64Header+"."+base64iv+"."+payload, secret);
         String token = base64Header+"."+base64iv+"."+payload+"."+signature;
         return token;
     }
 
+    @Override
     public String decode(String token,String secret){
         try {
             if(token.isBlank()) throw new ApiAuthException("Unauthorized", 401);
@@ -91,7 +102,7 @@ public class JWST {
         }
         
     }
-    public String getClaims(String token,String secret){
+    private String getClaims(String token,String secret){
         if(token.isBlank()) throw new ApiAuthException("Unauthorized", 401);
         try {
             String[] tokenArr = token.split("\\.");
@@ -127,15 +138,22 @@ public class JWST {
         }
     }
 
+    private Boolean checkHeader(String token) throws UnsupportedEncodingException{
+        String header = token.split("\\.")[0];
+        byte[] decodedHeader = Base64.getUrlDecoder().decode(header);
+        String stringHeader = new String(decodedHeader,"UTF-8");
+        return createHeader().equals(stringHeader);
+    }
+
     private Boolean verifySignature(String token,String secret){
         String[] tokenArr = token.split("\\.");
-        String computedSignature = createSignature(tokenArr[0]+"."+tokenArr[1], secret);
-        return computedSignature.equals(tokenArr[2]);
+        String computedSignature = createSignature(tokenArr[0]+"."+tokenArr[1]+"."+tokenArr[2], secret);
+        return computedSignature.equals(tokenArr[3]);
     }
 
     //this will create the header of jwt (algorithm and type)
     private String createHeader(){
-        JsonObject json = Json.createObjectBuilder().add("alg", "AES").add("typ", "jwt").build();
+        JsonObject json = Json.createObjectBuilder().add("alg", "AES").add("typ", "jst").build();
         return json.toString();
     }
 
@@ -156,33 +174,40 @@ public class JWST {
     }
 
     //subject claim
-    public JWST sub(String key,String value){
-        claims.put(key, value);
+    @Override
+    public SJT sub(String value){
+        claimsKeys.add("sub");
+        claims.put("sub", value);
         return this;
     }
 
     //audience claim
-    public JWST aud(String key,String value){
-        claims.put(key, value);
+    @Override
+    public SJT aud(String value){
+        claimsKeys.add("aud");
+        claims.put("aud", value);
         return this;
     }
 
     //not before claim (timestamp before which token is invalid || token can be use after that duration)
-    public JWST nbf(String key,String value){
-        claimsKeys.add(key);
-        claims.put(key, String.valueOf(durationCalculator(value)+System.currentTimeMillis()));
+    @Override
+    public SJT nbf(String value){
+        claimsKeys.add("nbf");
+        claims.put("nbf", String.valueOf(durationCalculator(value)+System.currentTimeMillis()));
         return this;
     }
 
     //jwt unique id claim
-    public JWST jti(String key,String value){
-        claimsKeys.add(key);
-        claims.put(key, value);
+    @Override
+    public SJT jti(String value){
+        claimsKeys.add("jti");
+        claims.put("jti", value);
         return this;
     }
 
     //expire claim
-    public JWST exp(String value){
+    @Override
+    public SJT exp(String value){
         ExpInMiliSeconds += System.currentTimeMillis()+durationCalculator(value);
         return this;
     }
@@ -251,7 +276,7 @@ public class JWST {
         GCMParameterSpec spec = new GCMParameterSpec(128, iv);
         cipher.init(Cipher.ENCRYPT_MODE, key,spec);
         byte[] encrypt = cipher.doFinal(payload.getBytes("UTF-8"));
-        return Base64.getEncoder().encodeToString(encrypt);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(encrypt);
     }
 
     private String Decrypt(String payload,String ivString,String secret) throws Exception{
@@ -260,7 +285,7 @@ public class JWST {
         this.iv = decodeIv(ivString);
         GCMParameterSpec spec = new GCMParameterSpec(128, iv);
         cipher.init(Cipher.ENCRYPT_MODE, key,spec);
-        byte[] decode = Base64.getDecoder().decode(payload);
+        byte[] decode = Base64.getUrlDecoder().decode(payload);
         return new String(cipher.doFinal(decode),"UTF-8");
     }
 }

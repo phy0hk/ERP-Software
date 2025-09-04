@@ -3,13 +3,11 @@ package com.erpsoftware.inv_sup_management.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.erpsoftware.inv_sup_management.security.ApiAuthException;
 import com.erpsoftware.inv_sup_management.security.AuthGuardAspet;
 import com.erpsoftware.inv_sup_management.services.AuthServices;
 import com.erpsoftware.inv_sup_management.services.Interfaces.AuthServicesInterface;
 
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.web.bind.annotation.PostMapping;
