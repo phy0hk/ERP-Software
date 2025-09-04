@@ -31,5 +31,4 @@ public class ProductCategory {
     @UpdateTimestamp
     private Timestamp updatedAt;
 
-    // Getters and setters
 }

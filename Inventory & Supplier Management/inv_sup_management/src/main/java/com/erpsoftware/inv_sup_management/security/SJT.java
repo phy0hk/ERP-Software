@@ -13,11 +13,13 @@ import javax.crypto.Mac;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import jakarta.json.*;
 
 @Service("SecureJsonToken")
+@Primary
 public class SJT implements TokenService{
     private byte[] iv;
     private Map<String,String> claims = new HashMap<>();
