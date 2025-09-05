@@ -1,4 +1,4 @@
-package com.erpsoftware.inv_sup_management.security;
+package com.erpsoftware.inv_sup_management.security.TokenService;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -15,6 +15,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+
+import com.erpsoftware.inv_sup_management.security.ApiAuthException;
 
 import jakarta.json.*;
 

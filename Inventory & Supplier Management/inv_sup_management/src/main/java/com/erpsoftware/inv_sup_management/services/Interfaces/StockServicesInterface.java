@@ -1,8 +1,13 @@
 package com.erpsoftware.inv_sup_management.services.Interfaces;
 
-import com.erpsoftware.inv_sup_management.entity.Stock_movements;
+import java.util.List;
 
+import com.erpsoftware.inv_sup_management.entity.Stock_movements;
+import org.springframework.stereotype.Service;
+
+@Service
 public interface StockServicesInterface {
-    Stock_movements getStocksMovements();
-    Stock_movements createStockMovements();
+    List<Stock_movements> getStock_movements();
+    List<Stock_movements> getStock_movementsByDate(String from,String to);
+    String addMovement(Integer product_id, Integer change, String reason, Integer source_id);
 }

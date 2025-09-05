@@ -3,6 +3,7 @@ package com.erpsoftware.inv_sup_management.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.erpsoftware.inv_sup_management.responseModel.ResponseJson.StatusResponder;
 import com.erpsoftware.inv_sup_management.security.AuthGuardAspet;
 import com.erpsoftware.inv_sup_management.services.AuthServices;
 import com.erpsoftware.inv_sup_management.services.Interfaces.AuthServicesInterface;
@@ -31,7 +32,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResMessage Login(@RequestBody LoginForm body,HttpServletResponse response) {
+    public StatusResponder<String> Login(@RequestBody LoginForm body,HttpServletResponse response) {
         String email = body.email;
         String password = body.password;
         if(authService.Login(email,password)){
@@ -42,14 +43,14 @@ public class AuthController {
             cookie.setPath("/");              
             cookie.setMaxAge(60 * 60);
             response.addCookie(cookie);
-            return new ResMessage("200", "Login Success");
+            return new StatusResponder<>("200", "Login Success");
         }else{
-            return new ResMessage("401","Incorrect email or password");
+            return new StatusResponder<>("401","Incorrect email or password");
         }
     }
 
     @RequestMapping("/logout")
-    public ResMessage logout(HttpServletResponse response) {
+    public StatusResponder<String> logout(HttpServletResponse response) {
         Cookie cookie = new Cookie("token", null); // same name
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
@@ -58,19 +59,18 @@ public class AuthController {
 
         response.addCookie(cookie);
 
-        return new ResMessage("ok","Logged out successfully");
+        return new StatusResponder<>("ok","Logged out successfully");
     }
 
     @RequestMapping("/check")
-    public ResMessage check(){
+    public StatusResponder<String> check(){
         String checkAuthRes = authServices.CheckAuth();
         if(checkAuthRes.equals("ok")){
-            return new ResMessage("ok","Authorized");
+            return new StatusResponder<>("ok","Authorized");
         }
-        return new ResMessage("401", checkAuthRes);
+        return new StatusResponder<>("401", checkAuthRes);
     }
     
 
     public record LoginForm(String email,String password){};
-    public record ResMessage(String status,String message){};
 }

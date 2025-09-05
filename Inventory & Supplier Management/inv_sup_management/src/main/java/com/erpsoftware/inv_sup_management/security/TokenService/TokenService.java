@@ -1,4 +1,4 @@
-package com.erpsoftware.inv_sup_management.security;
+package com.erpsoftware.inv_sup_management.security.TokenService;
 
 public interface TokenService {
     //main feature

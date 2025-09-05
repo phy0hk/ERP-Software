@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -16,8 +18,9 @@ public class Purchase_order_items {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(nullable = false)
-    private Integer order_id;
+    @ManyToOne
+    @JoinColumn(name = "order_id", nullable = false)
+    private Purchase_orders order;
     @Column(nullable = false)
     private Integer product_id;
     @Column(nullable = false)

@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.erpsoftware.inv_sup_management.security.ApiAuthException;
-import com.erpsoftware.inv_sup_management.security.JWT;
-import com.erpsoftware.inv_sup_management.security.TokenService;
+import com.erpsoftware.inv_sup_management.security.TokenService.JWT;
+import com.erpsoftware.inv_sup_management.security.TokenService.TokenService;
 import com.erpsoftware.inv_sup_management.services.Interfaces.AuthServicesInterface;
 
 import jakarta.json.Json;

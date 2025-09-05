@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.erpsoftware.inv_sup_management.entity.Suppliers;
+import com.erpsoftware.inv_sup_management.responseModel.ResponseJson.StatusResponder;
 import com.erpsoftware.inv_sup_management.security.AuthGuard;
 import com.erpsoftware.inv_sup_management.services.Interfaces.SupplierServicesInterface;
 
@@ -35,13 +36,13 @@ public class SupplierController {
     }
 
     @GetMapping("/suppliers")
-    public ResponseFormat<List<Suppliers>> getAllSupplier() {
+    public StatusResponder<List<Suppliers>> getAllSupplier() {
         List<Suppliers> suppliers = this.supplierServices.getAllSupplier();
-        return new ResponseFormat<>("ok", suppliers);   
+        return new StatusResponder<>("ok", suppliers);   
     }
     
     @GetMapping("/supplier")
-    public ResponseFormat<Suppliers> getSupplier(@RequestParam(required = false) Integer id,
+    public StatusResponder<Suppliers> getSupplier(@RequestParam(required = false) Integer id,
                                              @RequestParam(required = false) String name) {
         Suppliers supplier;
         if(id!=null){
@@ -51,32 +52,30 @@ public class SupplierController {
         }else {
         throw new RuntimeException("Must provide either id or name");
     }
-        return new ResponseFormat<>("ok", supplier);
+        return new StatusResponder<>("ok", supplier);
     }
 
     @PostMapping("/supplier")
-    public ResponseFormat<Suppliers> createSupplier(@RequestBody Suppliers supplier) {
+    public StatusResponder<Suppliers> createSupplier(@RequestBody Suppliers supplier) {
         Suppliers newSupplier = this.supplierServices.createSupplier(supplier);
-        return new ResponseFormat<>("ok",newSupplier);
+        return new StatusResponder<>("ok",newSupplier);
     }
     
     @PutMapping("/supplier/{id}")
-    public ResponseFormat<Suppliers> updateSupplier(@PathVariable int id, @RequestBody Suppliers entity) {
+    public StatusResponder<Suppliers> updateSupplier(@PathVariable int id, @RequestBody Suppliers entity) {
         Suppliers updatedSupplier = this.supplierServices.updateSupplier(entity, id);
-        return new ResponseFormat<>("ok", updatedSupplier);
+        return new StatusResponder<>("ok", updatedSupplier);
     }
 
     @DeleteMapping("/supplier/{id}")
-    public ResponseFormat<String> deleteSupplier(@PathVariable int id){
+    public StatusResponder<String> deleteSupplier(@PathVariable int id){
         Boolean deleted = this.supplierServices.deleteSupplier(id);
         if(deleted){
-            return new ResponseFormat<>("ok","Deleted Successfully!");
+            return new StatusResponder<>("ok","Deleted Successfully!");
         }
-        return new ResponseFormat<>("bad", "Failed to delete supplier");
+        return new StatusResponder<>("bad", "Failed to delete supplier");
     }
 
 
-
-    record ResponseFormat<T>(String status,T data){};
     
 }
