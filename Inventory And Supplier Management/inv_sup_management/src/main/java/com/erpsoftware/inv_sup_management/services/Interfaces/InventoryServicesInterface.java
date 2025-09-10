@@ -19,4 +19,6 @@ public interface InventoryServicesInterface {
     Inventory saveInventory(Inventory inventory);
     Inventory moveInvItem(MoveInvItem entity);
     List<Inventory> moveInvItems(MoveInvItemMulti items);
+
+    
 }

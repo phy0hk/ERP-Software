@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.erpsoftware.inv_sup_management.security.ApiAuthException;
+import com.erpsoftware.inv_sup_management.security.ApiException;
 import com.erpsoftware.inv_sup_management.security.TokenService.TokenService;
 import com.erpsoftware.inv_sup_management.services.Interfaces.AuthServicesInterface;
 
@@ -70,7 +70,7 @@ public class AuthServices implements AuthServicesInterface{
                 e.printStackTrace();
             }
         }
-        throw new ApiAuthException("Unauthorized", 401);
+        throw new ApiException("Unauthorized", 401);
     }
     
 }

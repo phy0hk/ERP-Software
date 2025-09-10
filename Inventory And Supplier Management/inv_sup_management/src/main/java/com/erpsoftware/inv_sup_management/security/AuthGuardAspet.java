@@ -57,13 +57,13 @@ public class AuthGuardAspet {
                     token = cookie.getValue();
                     String verifyRes = tokenService.verify(token, Secret);
                     if(!verifyRes.equals("ok")){
-            throw new ApiAuthException(verifyRes, 401);
+            throw new ApiException(verifyRes, 401);
                     }
                 }
             }
         }
         if (token == null) {
-            throw new ApiAuthException("Token not found", 401);
+            throw new ApiException("Token not found", 401);
         } else {
 
         }

@@ -63,17 +63,14 @@ public class InventoryController {
         }
     }
 
-    @PutMapping("/inventory/movement/{id}")
+    @PutMapping("/inventory/movement")
     public StatusResponder<Inventory> moveInventoryItem(@RequestBody MoveInvItem entity) {
         Inventory item = inventoryServices.moveInvItem(entity);
         return new StatusResponder<>("ok",item);
     }
-    @PutMapping("/inventory/movement")
+    @PutMapping("/inventory/movement/multi")
     public StatusResponder<List<Inventory>> moveInventoryItem(@RequestBody MoveInvItemMulti entity) {
         List<Inventory> items = inventoryServices.moveInvItems(entity);
         return new StatusResponder<>("ok",items);
     }
-
-    
-    
 }

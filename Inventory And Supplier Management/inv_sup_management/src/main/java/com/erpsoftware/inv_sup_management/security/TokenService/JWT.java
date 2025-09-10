@@ -11,7 +11,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.stereotype.Service;
 
-import com.erpsoftware.inv_sup_management.security.ApiAuthException;
+import com.erpsoftware.inv_sup_management.security.ApiException;
 
 import jakarta.json.*;
 
@@ -23,7 +23,7 @@ public class JWT implements TokenService{
 
     public String verify(String token, String secret) throws UnsupportedEncodingException {
         if(!checkHeader(token)){
-            throw new ApiAuthException("Token algorithm mismatch", 401);
+            throw new ApiException("Token algorithm mismatch", 401);
         }
         if (verifySignature(token, secret)) {
             String decodedClaims = decode(token,secret);
@@ -48,7 +48,7 @@ public class JWT implements TokenService{
                 }
             }
         } else {
-            throw new ApiAuthException("Invalid Token",401);
+            throw new ApiException("Invalid Token",401);
         }
     }
 
@@ -73,10 +73,10 @@ public class JWT implements TokenService{
     public String decode(String token, String secret) {
         try {
             if (token.isBlank())
-                throw new ApiAuthException("Unauthorized", 401);
+                throw new ApiException("Unauthorized", 401);
             String[] tokenArr = token.split("\\.");
             if (tokenArr.length != 3) {
-                throw new ApiAuthException("Invalid token format, parts: " + tokenArr.length, 401);
+                throw new ApiException("Invalid token format, parts: " + tokenArr.length, 401);
             }
             String encryptedPayload = tokenArr[1];
             String decryptedPayload = Decrypt(encryptedPayload);

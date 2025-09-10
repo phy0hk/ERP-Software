@@ -13,7 +13,7 @@ import com.erpsoftware.inv_sup_management.entity.Purchase_order_items;
 import com.erpsoftware.inv_sup_management.entity.Purchase_orders;
 import com.erpsoftware.inv_sup_management.repo.PurchaseOrderItemsRepository;
 import com.erpsoftware.inv_sup_management.repo.PurchaseOrdersRepository;
-import com.erpsoftware.inv_sup_management.security.ApiAuthException;
+import com.erpsoftware.inv_sup_management.security.ApiException;
 import com.erpsoftware.inv_sup_management.services.Interfaces.InventoryServicesInterface;
 import com.erpsoftware.inv_sup_management.services.Interfaces.LocationServicesInterface;
 import com.erpsoftware.inv_sup_management.services.Interfaces.ProductServicesInterface;
@@ -104,16 +104,15 @@ public class PurchaseOrderService implements PurchaseOrdersServicesInterface {
         Purchase_orders order = getPurchaseOrder(order_id);
         List<Purchase_order_items> updatedList = new ArrayList<>();
         if(order.getStatus().equals("Completed")){
-            throw new ApiAuthException("You cant receive completed order", 400);
+            throw new ApiException("You cant receive completed order", 400);
         }
         for (Purchase_order_items item : order_items) {
             if (item.getQuantity() < item.getReceivedQuantity()) {
-                throw new ApiAuthException("Receive quantity can't be exceed purchase request quantity",400);
+                throw new ApiException("Receive quantity can't be exceed purchase request quantity",400);
             }
             Integer receiveQty = item.getReceivedQuantity();
             item = purchaseOrderItemsRepository.findById(item.getId()).orElse(null);
-            item.setReceivedQuantity(receiveQty);
-            Purchase_order_items beforeItem = getPurchaseOrderItem(item.getId());
+            Integer beforeReceiveQty = item.getReceivedQuantity();
             Inventory inventoryItem = inventoryServices.getInventory(location.getId(), item.getProductId());
             if (inventoryItem == null) {
                 inventoryItem = new Inventory();
@@ -122,11 +121,15 @@ public class PurchaseOrderService implements PurchaseOrdersServicesInterface {
                 inventoryItem.setQuantity(0);
                 inventoryItem.setReserved(0);
             }
-            Integer beforeReceiveQty = beforeItem.getReceivedQuantity();
-            Integer afterReceiveQty = item.getReceivedQuantity();
-            Integer changesQty = afterReceiveQty - beforeReceiveQty;
+            System.out.println("Before quantity : "+beforeReceiveQty +" After quantity : "+receiveQty);
+            if(beforeReceiveQty >= receiveQty){
+                throw new ApiException("Receive quantity can't be less than or equal previous receive quantity",400);
+            }
+            item.setReceivedQuantity(receiveQty);
+            Integer changesQty = receiveQty - beforeReceiveQty;
             Purchase_order_items updatedItem = updatePurchaseOrderItem(item);
             inventoryItem.setQuantity(inventoryItem.getQuantity() + changesQty);
+            System.out.println("Changed Inventory Item "+ inventoryItem);
             inventoryServices.saveInventory(inventoryItem);
             stockService.addMovement(inventoryItem.getProductId(), changesQty, "Receive Purchase Item",
                     "INV"+inventoryItem.getId());

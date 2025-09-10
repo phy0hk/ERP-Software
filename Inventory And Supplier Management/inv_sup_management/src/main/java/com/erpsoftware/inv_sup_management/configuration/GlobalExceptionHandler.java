@@ -4,13 +4,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.erpsoftware.inv_sup_management.security.ApiAuthException;
+import com.erpsoftware.inv_sup_management.security.ApiException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ApiAuthException.class)
-    public ResponseEntity<ErrorResponse> handleApiAuthException(ApiAuthException ex) {
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<ErrorResponse> handleApiAuthException(ApiException ex) {
         return ResponseEntity
                 .status(ex.getStatus()) // 401 or 403
                 .body(new ErrorResponse(ex.getMessage(), ex.getStatus()));

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import com.erpsoftware.inv_sup_management.entity.Inventory;
 import com.erpsoftware.inv_sup_management.entity.Locations;
 import com.erpsoftware.inv_sup_management.repo.InventoryRepository;
-import com.erpsoftware.inv_sup_management.security.ApiAuthException;
+import com.erpsoftware.inv_sup_management.security.ApiException;
 import com.erpsoftware.inv_sup_management.services.Interfaces.InventoryServicesInterface;
 import com.erpsoftware.inv_sup_management.services.Interfaces.LocationServicesInterface;
 import com.erpsoftware.inv_sup_management.services.Interfaces.StockServicesInterface;
@@ -68,26 +68,42 @@ public class InventoryServices implements InventoryServicesInterface {
     @Transactional
     public Inventory moveInvItem(MoveInvItem entity) {
         Inventory movedItem = entity.item();
+        Inventory originalItemBeforeMove = getInventory(movedItem.getId());
         Locations prevLocation = locationServices.getLocationInfo(movedItem.getLocationId());
         Locations newLocation = entity.location();
         movedItem.setLocationId(newLocation.getId());
-        stockServices.addMovement(movedItem.getProductId(), 0, "Move item from "+prevLocation.getCode()+" "+newLocation.getCode()+".", "INV"+movedItem.getId());
-        inventoryRepository.save(movedItem);
+        Inventory destinationItem = getInventory(newLocation.getId(),movedItem.getProductId());
+        if(destinationItem==null){
+            destinationItem = new Inventory();
+            destinationItem.setLocationId(newLocation.getId());
+            destinationItem.setProductId(movedItem.getProductId());
+            destinationItem.setQuantity(0);
+            destinationItem.setReserved(0);
+        }
+        destinationItem.setQuantity(destinationItem.getQuantity()+movedItem.getQuantity());
+        if(originalItemBeforeMove.getQuantity()<movedItem.getQuantity() || movedItem.getQuantity()<=0 || originalItemBeforeMove.getQuantity()<=0){
+            throw new ApiException("Invalid Move Quantity Contain", 400);
+        }
+        originalItemBeforeMove.setQuantity(originalItemBeforeMove.getQuantity()-movedItem.getQuantity());
+        stockServices.addMovement(movedItem.getProductId(), 0, "Move item from "+prevLocation.getCode()+" "+newLocation.getCode()+".", "INV"+destinationItem.getId());
+        inventoryRepository.save(originalItemBeforeMove);
+        inventoryRepository.save(destinationItem);
         return movedItem;
     }
+
 
     @Override
     @Transactional
     public List<Inventory> moveInvItems(MoveInvItemMulti items) {
         List<Inventory> invItems = items.items();
-        Locations prevLocation = items.prevlocation();
         Locations newLocation = items.newLocation();
         for(Inventory invItem:invItems){
-            invItem.setLocationId(newLocation.getId());
-            stockServices.addMovement(invItem.getProductId(), 0, "Move item from "+prevLocation.getCode()+" "+newLocation.getCode()+".", "INV"+invItem.getId());
+            moveInvItem(new MoveInvItem(invItem,newLocation));
         }
         inventoryRepository.saveAll(invItems);
         return invItems;
     }
-    
+
+
+
 }

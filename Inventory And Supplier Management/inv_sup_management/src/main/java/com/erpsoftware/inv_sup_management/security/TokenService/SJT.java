@@ -16,7 +16,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
-import com.erpsoftware.inv_sup_management.security.ApiAuthException;
+import com.erpsoftware.inv_sup_management.security.ApiException;
 
 import jakarta.json.*;
 
@@ -41,7 +41,7 @@ public class SJT implements TokenService{
     @Override
     public String verify(String token,String secret) throws Exception{
         if(!checkHeader(token)){
-            throw new ApiAuthException("Token algorithm mismatch", 401);
+            throw new ApiException("Token algorithm mismatch", 401);
         }
         if(verifySignature(token, secret)){
           String decodedClaims = getClaims(token, secret);
@@ -66,7 +66,7 @@ public class SJT implements TokenService{
                 }
             }
         }else{
-            throw new ApiAuthException("Invalid Token", 401);
+            throw new ApiException("Invalid Token", 401);
         }
     }
 
@@ -87,10 +87,10 @@ public class SJT implements TokenService{
     @Override
     public String decode(String token,String secret){
         try {
-            if(token.isBlank()) throw new ApiAuthException("Unauthorized", 401);
+            if(token.isBlank()) throw new ApiException("Unauthorized", 401);
             String[] tokenArr = token.split("\\.");
             if (tokenArr.length != 4) {
-    throw new ApiAuthException("Invalid token format, parts: " + tokenArr.length,401);
+    throw new ApiException("Invalid token format, parts: " + tokenArr.length,401);
 }
             String encryptedPayload = tokenArr[2];
             String ivString = tokenArr[1];
@@ -107,11 +107,11 @@ public class SJT implements TokenService{
         
     }
     private String getClaims(String token,String secret){
-        if(token.isBlank()) throw new ApiAuthException("Unauthorized", 401);
+        if(token.isBlank()) throw new ApiException("Unauthorized", 401);
         try {
             String[] tokenArr = token.split("\\.");
             if (tokenArr.length != 4) {
-    throw new ApiAuthException("Invalid token format, parts: " + tokenArr.length,401);
+    throw new ApiException("Invalid token format, parts: " + tokenArr.length,401);
 }
             String encryptedPayload = tokenArr[2];
             String ivString = tokenArr[1];
