@@ -3,14 +3,17 @@ package com.erpsoftware.inv_sup_management.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.erpsoftware.inv_sup_management.entity.Inventory;
 import com.erpsoftware.inv_sup_management.entity.Locations;
 import com.erpsoftware.inv_sup_management.entity.Product;
+import com.erpsoftware.inv_sup_management.entity.ProductCategory;
 import com.erpsoftware.inv_sup_management.entity.Purchase_order_items;
 import com.erpsoftware.inv_sup_management.entity.Purchase_orders;
+import com.erpsoftware.inv_sup_management.repo.CategoryRepository;
 import com.erpsoftware.inv_sup_management.repo.PurchaseOrderItemsRepository;
 import com.erpsoftware.inv_sup_management.repo.PurchaseOrdersRepository;
 import com.erpsoftware.inv_sup_management.security.ApiException;
@@ -28,18 +31,16 @@ public class PurchaseOrderService implements PurchaseOrdersServicesInterface {
     private final ProductServicesInterface productService;
     private final InventoryServicesInterface inventoryServices;
     private final LocationServicesInterface locationServices;
-    private final PurchaseOrdersRepository purchaseOrdersRepository;
-    private final PurchaseOrderItemsRepository purchaseOrderItemsRepository;
+    @Autowired
+    private PurchaseOrdersRepository purchaseOrdersRepository;
+    @Autowired
+    private PurchaseOrderItemsRepository purchaseOrderItemsRepository;
 
     public PurchaseOrderService(StockServicesInterface stockService, ProductServicesInterface productService,
-            PurchaseOrdersRepository purchaseOrdersRepository,
-            PurchaseOrderItemsRepository purchaseOrderItemsRepository,
             InventoryServicesInterface inventoryServices,
             LocationServicesInterface locationServices) {
         this.stockService = stockService;
         this.productService = productService;
-        this.purchaseOrderItemsRepository = purchaseOrderItemsRepository;
-        this.purchaseOrdersRepository = purchaseOrdersRepository;
         this.inventoryServices = inventoryServices;
         this.locationServices = locationServices;
     }
@@ -155,4 +156,7 @@ public class PurchaseOrderService implements PurchaseOrdersServicesInterface {
         }
         return true;
     }
+
+
+   
 }

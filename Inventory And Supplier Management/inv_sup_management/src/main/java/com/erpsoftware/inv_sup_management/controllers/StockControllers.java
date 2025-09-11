@@ -3,10 +3,12 @@ package com.erpsoftware.inv_sup_management.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.erpsoftware.inv_sup_management.entity.Damage_Report;
+import com.erpsoftware.inv_sup_management.entity.Stock_movements;
 import com.erpsoftware.inv_sup_management.repo.StockMovementRepository;
 import com.erpsoftware.inv_sup_management.security.AuthGuard;
 import com.erpsoftware.inv_sup_management.services.Interfaces.StockServicesInterface;
-import com.erpsoftware.inv_sup_management.utils.ResponseJson.DamageReport;
+import com.erpsoftware.inv_sup_management.utils.ResponseJson.AdjustStock;
 import com.erpsoftware.inv_sup_management.utils.ResponseJson.StatusResponder;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,18 +27,18 @@ public class StockControllers {
         this.stockServices = stockServices;
     }
 
-    @GetMapping("/stock-movements")
-    public String getStockHistory(@RequestBody Integer param) {
-        return new String();
-    }
-
-
     //Types (In/Out)
     //Out (Bought/Damage)
-    @PostMapping("/damage-report")
-    public StatusResponder<DamageReport> damageReport(@RequestBody DamageReport damageReport) {
-        DamageReport newReport = stockServices.addDamageReport(damageReport);
+    @PostMapping("/stock/damage-report")
+    public StatusResponder<Damage_Report> damageReport(@RequestBody AdjustStock damageReport) {
+        Damage_Report newReport = stockServices.addDamageReport(damageReport);
         return new StatusResponder<>("ok",newReport);
+    }
+    
+    @PostMapping("/stock/adjustStock")
+    public StatusResponder<Stock_movements> adjustStockUpadte(@RequestBody AdjustStock adjustStock) {
+        Stock_movements newAdjustment = stockServices.stockAdjustment(adjustStock);
+        return new StatusResponder<>("ok",newAdjustment);
     }
     
 }

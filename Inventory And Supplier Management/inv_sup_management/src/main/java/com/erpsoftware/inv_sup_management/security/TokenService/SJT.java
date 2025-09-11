@@ -40,6 +40,7 @@ public class SJT implements TokenService{
     
     @Override
     public String verify(String token,String secret) throws Exception{
+        
         if(!checkHeader(token)){
             throw new ApiException("Token algorithm mismatch", 401);
         }

@@ -63,7 +63,7 @@ public class AuthGuardAspet {
             }
         }
         if (token == null) {
-            throw new ApiException("Token not found", 401);
+            // throw new ApiException("Token not found", 401);
         } else {
 
         }

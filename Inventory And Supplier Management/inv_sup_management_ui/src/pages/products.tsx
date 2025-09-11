@@ -1,10 +1,9 @@
 import RootLayout from "../layout/layout";
 
-export default function HomePage()
-{
+export default function ProductsPage(){
     return (
         <RootLayout>
-            Hello
+            Product
         </RootLayout>
     )
 }

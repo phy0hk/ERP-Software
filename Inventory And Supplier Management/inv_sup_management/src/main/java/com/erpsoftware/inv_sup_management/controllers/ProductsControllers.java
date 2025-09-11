@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.erpsoftware.inv_sup_management.entity.Product;
+import com.erpsoftware.inv_sup_management.entity.ProductCategory;
+import com.erpsoftware.inv_sup_management.security.ApiException;
 import com.erpsoftware.inv_sup_management.security.AuthGuard;
 
 import java.util.List;
@@ -19,6 +21,8 @@ import com.erpsoftware.inv_sup_management.utils.ResponseJson.StatusResponder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @AuthGuard
@@ -74,7 +78,41 @@ public class ProductsControllers {
         return new StatusResponder<>("bad", null);
     }
 
-    // Records or Json format
+    //---------Category API
+
+    @PostMapping("/category")
+    public StatusResponder<ProductCategory> createCategory(@RequestBody ProductCategory entity) {
+        ProductCategory checkExistance = productServices.getCategoryByID(entity.getId());
+        if(checkExistance==null){
+            ProductCategory newCategory = productServices.saveCategory(entity);
+            return new StatusResponder<>("ok",newCategory);
+        }else{
+            throw new ApiException("Please use put method for updating data", 0);
+        }
+    }
+    
+    @GetMapping("/category")
+    public StatusResponder<List<ProductCategory>> getAllCategory() {
+        List<ProductCategory> allCategories = productServices.getAllCategories();
+        return new StatusResponder<>("ok",allCategories);
+    }
+
+    @GetMapping("/category/{id}")
+    public StatusResponder<ProductCategory> getCategoryById(@PathVariable Integer id) {
+        ProductCategory Category = productServices.getCategoryByID(id);
+        return new StatusResponder<>("ok",Category);
+    }
+
+    @PutMapping("/category")
+    public StatusResponder<ProductCategory> updateCategory(@RequestBody ProductCategory entity){
+        if(entity.getId()==null)
+        {
+            throw new ApiException("Please provide id for update category", 400);
+        }
+        ProductCategory updatedCategory = productServices.saveCategory(entity);
+        return new StatusResponder<>("ok",updatedCategory);
+    }
+
 
 
 }

@@ -13,5 +13,5 @@ public class ResponseJson {
     public record ReceiveOrderBody(List<Purchase_order_items> order_items,Locations location){};
     public record MoveInvItem(Inventory item,Locations location){};
     public record MoveInvItemMulti(List<Inventory> items,Locations prevlocation,Locations newLocation){};
-    public record DamageReport(Integer product_id,String reason,String ReportedBy,String sourceRef,Integer quantity,Integer locationId) {}
+    public record AdjustStock(Integer product_id,String reason,String reportedBy,String sourceRef,Integer quantity,Integer locationId,Integer adjustType) {}
 }

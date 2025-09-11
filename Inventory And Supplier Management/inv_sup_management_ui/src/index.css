@@ -1,1 +1,67 @@
 @import "tailwindcss";
+
+:root{
+  --bg-color:#ffffff;
+  --font-color:#212121;
+  --color-primary:#2196F3;
+  --color-secondary:#8BC34A;
+  --logo-color:#f9a825;
+  --inter:"Inter", sans-serif;
+}
+
+@theme{
+  --color-font-primary:var(--font-color);
+  --color-primary:var(--color-primary);
+  --color-secondary:var(--color-secondary);
+  --color-background:var(--bg-color);
+  --color-logo:var(--logo-color);
+  --font-inter:var(--inter);
+}
+
+ .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+
+/* palette.text.primary
+#fff
+
+palette.text.secondary
+rgba(255, 255, 255, 0.7)
+
+palette.text.disabled
+rgba(255, 255, 255, 0.5)
+
+Buttons
+
+palette.action.active
+#fff
+
+palette.action.hover
+rgba(255, 255, 255, 0.08)
+
+palette.action.selected
+rgba(255, 255, 255, 0.16)
+
+palette.action.disabled
+rgba(255, 255, 255, 0.3)
+
+palette.action.disabledBackground
+rgba(255, 255, 255, 0.12)
+
+Background
+
+palette.background.default
+#121212
+
+palette.background.paper
+#121212
+
+Divider
+
+palette.divider
+rgba(255, 255, 255, 0.12) */
+

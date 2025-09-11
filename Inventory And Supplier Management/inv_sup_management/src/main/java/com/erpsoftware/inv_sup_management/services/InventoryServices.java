@@ -2,14 +2,15 @@ package com.erpsoftware.inv_sup_management.services;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.erpsoftware.inv_sup_management.entity.Inventory;
 import com.erpsoftware.inv_sup_management.entity.Locations;
 import com.erpsoftware.inv_sup_management.repo.InventoryRepository;
+import com.erpsoftware.inv_sup_management.repo.LocationsRepository;
 import com.erpsoftware.inv_sup_management.security.ApiException;
 import com.erpsoftware.inv_sup_management.services.Interfaces.InventoryServicesInterface;
-import com.erpsoftware.inv_sup_management.services.Interfaces.LocationServicesInterface;
 import com.erpsoftware.inv_sup_management.services.Interfaces.StockServicesInterface;
 import com.erpsoftware.inv_sup_management.utils.ResponseJson.MoveInvItem;
 import com.erpsoftware.inv_sup_management.utils.ResponseJson.MoveInvItemMulti;
@@ -19,13 +20,14 @@ import jakarta.transaction.Transactional;
 @Service
 public class InventoryServices implements InventoryServicesInterface {
 
-    private final InventoryRepository inventoryRepository;
+    @Autowired
+    private InventoryRepository inventoryRepository;
+    @Autowired
+    private LocationsRepository locationsRepository;
+
     private final StockServicesInterface stockServices;
-    private final LocationServicesInterface locationServices;
-    public InventoryServices(InventoryRepository inventoryRepository,StockServicesInterface stockServices,LocationServicesInterface locationServices){
-        this.inventoryRepository = inventoryRepository;
+    public InventoryServices(StockServicesInterface stockServices){
         this.stockServices = stockServices;
-        this.locationServices = locationServices;
     }
 
     @Override
@@ -69,7 +71,7 @@ public class InventoryServices implements InventoryServicesInterface {
     public Inventory moveInvItem(MoveInvItem entity) {
         Inventory movedItem = entity.item();
         Inventory originalItemBeforeMove = getInventory(movedItem.getId());
-        Locations prevLocation = locationServices.getLocationInfo(movedItem.getLocationId());
+        Locations prevLocation = locationsRepository.findById(movedItem.getLocationId()).orElseThrow(()->new ApiException("Unknow Location",400));
         Locations newLocation = entity.location();
         movedItem.setLocationId(newLocation.getId());
         Inventory destinationItem = getInventory(newLocation.getId(),movedItem.getProductId());

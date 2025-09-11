@@ -7,14 +7,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.erpsoftware.inv_sup_management.entity.Product;
+import com.erpsoftware.inv_sup_management.entity.ProductCategory;
+import com.erpsoftware.inv_sup_management.repo.CategoryRepository;
 import com.erpsoftware.inv_sup_management.repo.ProductsRepository;
+import com.erpsoftware.inv_sup_management.security.ApiException;
 import com.erpsoftware.inv_sup_management.services.Interfaces.ProductServicesInterface;
 
 @Service
 public class ProductServices implements ProductServicesInterface{
     @Autowired
     private ProductsRepository productsRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
+    
     public List<Product> getAllProducts() {
         List<Product> allProducts = productsRepository.findAll();
         return allProducts;
@@ -72,6 +78,38 @@ public class ProductServices implements ProductServicesInterface{
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+
+     //-------------------------Category Management
+
+    @Override
+    public ProductCategory saveCategory(ProductCategory productCategory) {
+        ProductCategory newCategory = categoryRepository.save(productCategory);
+        return newCategory;
+    }
+
+    @Override
+    public List<ProductCategory> getAllCategories() {
+        List<ProductCategory> allCategories = categoryRepository.findAll();
+        return allCategories;
+    }
+
+    @Override
+    public ProductCategory getCategoryByID(Integer id) {
+        ProductCategory category = categoryRepository.findById(id).orElseThrow(()->new ApiException("Category not found", 400));
+        return category;
+    }
+
+    @Override
+    public String deleteCategory(Integer id) {
+        try {
+            categoryRepository.deleteById(id);
+            return "ok";
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ApiException("Category not found", 400);
         }
     }
 }
