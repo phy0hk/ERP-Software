@@ -2,11 +2,9 @@ import Navbar from "../components/common/navbar";
 
 export default function RootLayout({children}:any){
     return(
-        <div className="font-inter">
+        <div className="font-inter w-full h-dvh">
         <Navbar/>
-        <div className="px-5 py-1">
         {children}
-        </div>
         </div>
     )
 }

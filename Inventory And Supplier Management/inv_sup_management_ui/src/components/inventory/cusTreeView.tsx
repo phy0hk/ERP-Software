@@ -1,5 +1,7 @@
 import {SimpleTreeView, TreeItem} from '@mui/x-tree-view'
-import type { TreeItemType } from '../../utils/TypesList'
+import type { LocationType } from '../../utils/TypesList'
+import { cabinetFiling } from '@lucide/lab';
+import { BetweenHorizontalStart, ChevronDown, ChevronUp, Container, Dot, Icon, Warehouse } from 'lucide-react'
 export default function CusTreeView({Data}:props){
     
     return (
@@ -9,12 +11,35 @@ export default function CusTreeView({Data}:props){
     )
 }
 
-function RenderLeaf(node:TreeItemType){
-    return (<TreeItem key={node.id} itemId={node.id.toString()} label={node.label}>
-        {Array.isArray(node.childern)?node.childern.map((leaf)=>RenderLeaf(leaf)):null}
+function RenderLeaf(node:LocationType){
+    return (
+    <TreeItem slots={{expandIcon:ChevronDown,collapseIcon:ChevronUp}} key={node.id} itemId={node.id.toString()} label={CustomTreeItem(node)}>
+        {Array.isArray(node.children)?node.children.map((leaf)=>RenderLeaf(leaf)):null}
     </TreeItem>)
 }
 
+function IconSelector(type:string|undefined){
+    switch (type) {
+        case "Warehouse":
+            return <Warehouse size={15}/>;
+        case "Floor":
+            return <BetweenHorizontalStart size={15}/>;
+        case "Cabinet":
+            return <Icon iconNode={cabinetFiling} size={15}/>;
+        default:
+
+            break;
+    }
+}
+
+function CustomTreeItem({type,name}:LocationType){
+    return(
+        <div className='flex flex-row gap-2 items-center'>
+            {IconSelector(type)}<span>{name}</span>
+        </div>
+    )
+}
+
 type props = {
-    Data:TreeItemType[]
+    Data:LocationType[]
 }

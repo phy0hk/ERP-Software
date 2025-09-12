@@ -7,9 +7,14 @@ export type PageRoutes = {
     icon:IconName;
 }
 
-export type TreeItemType = {
+export type LocationType = {
     id:number,
-    label:string,
+    name:string,
+    parentId:number | null,
+    type?:string,
+    code?:string,
     description?:string,
-    childern?:TreeItemType[]
+    created_at?:Date,
+    updated_at?:Date,
+    children?:LocationType[]
 }

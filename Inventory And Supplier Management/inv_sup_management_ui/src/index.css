@@ -26,6 +26,21 @@
     display: none; /* Chrome, Safari, Opera */
   }
 
+.MuiTreeItem-group .MuiTreeItem-root {
+  position: relative;
+}
+
+.MuiTreeItem-group .MuiTreeItem-root::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: -12px;
+  border-left: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  width: 12px;
+  height: calc(100% + 8px);
+}
+
 /* palette.text.primary
 #fff
 

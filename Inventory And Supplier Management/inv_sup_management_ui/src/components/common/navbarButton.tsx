@@ -14,14 +14,14 @@ export default function NavbarButton({name,route,icon}:PageRoutes){
 
 
     return (
-        <button className="flex flex-col" onClick={handleClick} >
+        <button className="flex flex-col group" onClick={handleClick} >
             <div className={` ${pathname==route?"bg-primary/10":""} px-5 py-3 cursor-pointer flex flex-row items-center gap-3`}>
         <DynamicIcon name={icon}/>
         <div className="max-sm:hidden">
             {name}
         </div>
             </div>
-        <span className={` ${pathname==route?"w-full":"w-0"} transform ease-in-out delay-300 bg-primary h-1`}></span>
+        <span className={` ${pathname==route?"w-full":"w-0 group-hover:bg-secondary group-hover:w-full"}  bg-primary h-1`}></span>
         </button>
     )
 }

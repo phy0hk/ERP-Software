@@ -9,9 +9,10 @@ export default function Navbar(){
     {name:"Inventory",route:"/inventory",icon:"Boxes"},
     {name:"Products",route:"/products",icon:"Package"}
     ];
-
+    
     return(
-        <header className="color-secondary text-color p-5 flex flex-col gap-3"> 
+        <header className="text-color flex flex-col"> 
+        <div className='p-5 flex flex-col gap-3'>
             <h1 className="text-lg font-bold flex flex-row items-center">
                 <Package size={40} fill='true' className='text-logo'/>
                 <span>
@@ -19,11 +20,15 @@ export default function Navbar(){
                 </span>
             </h1>
             <div className='flex flex-col'>
-            <div className='flex flex-row scrollbar-hide overflow-auto'>
+            <div className='flex flex-row scrollbar-hide overflow-auto gap-1'>
                 {Pages.map((item,key)=><NavbarButton name={item.name} route={item.route} icon={item.icon} key={key}/>)}
             </div>
             <span className='w-full bg-black/10 h-0.5'></span>
             </div>
+        </div>
+        <div>
+
+        </div>
         </header>
     )
 }
