@@ -11,8 +11,7 @@ export default function NavbarButton({name,route,icon}:PageRoutes){
     const handleClick = () =>{
         navigate(route);
     }
-
-
+    
     return (
         <button className="flex flex-col group" onClick={handleClick} >
             <div className={` ${pathname==route?"bg-primary/10":""} px-5 py-3 cursor-pointer flex flex-row items-center gap-3`}>

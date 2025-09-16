@@ -1,5 +1,4 @@
 import {Home, Package} from 'lucide-react';
-import { useState } from 'react';
 import type { PageRoutes } from '../../utils/TypesList';
 import NavbarButton from './navbarButton';
 
@@ -9,7 +8,7 @@ export default function Navbar(){
     {name:"Inventory",route:"/inventory",icon:"Boxes"},
     {name:"Products",route:"/products",icon:"Package"}
     ];
-    
+
     return(
         <header className="text-color flex flex-col"> 
         <div className='p-5 flex flex-col gap-3'>

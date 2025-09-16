@@ -85,9 +85,5 @@ public class PurchaseController {
     public StatusResponder<List<Purchase_order_items>> receiveOrder(@RequestBody ReceiveOrderBody entity) {
             List<Purchase_order_items> items = purchaseOrderService.receivePurchaseOrderItems(entity.order_items(), entity.location());
             return new StatusResponder<>("ok",items);
-        
-
     }
-    
-    
 }
