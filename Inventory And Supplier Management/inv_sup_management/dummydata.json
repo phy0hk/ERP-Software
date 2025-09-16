@@ -1,0 +1,115 @@
+{
+    "status": "ok",
+    "data": [
+        {
+            "id": 1,
+            "name": "Yangon Warehouse",
+            "parentId": null,
+            "type": "Warehouse",
+            "code": "YGN-WH",
+            "description": "This is the Yangon main warehouse",
+            "created_at": "2025-09-09T00:58:03.689+00:00",
+            "updated_at": "2025-09-09T00:58:03.689+00:00"
+        },
+        {
+            "id": 2,
+            "name": "Floor 1",
+            "parentId": 1,
+            "type": "Floor",
+            "code": "YGN-WH-F1",
+            "description": "This is the first floor of Yangon warehouse",
+            "created_at": "2025-09-09T01:03:20.251+00:00",
+            "updated_at": "2025-09-09T01:03:20.251+00:00"
+        },
+        {
+            "id": 3,
+            "name": "Cabinet 1",
+            "parentId": 2,
+            "type": "Cabinet",
+            "code": "YGN-WH-F1-CAB1",
+            "description": "This is the first floor and first cabinet of Yangon warehouse",
+            "created_at": "2025-09-09T01:04:37.758+00:00",
+            "updated_at": "2025-09-09T01:04:37.758+00:00"
+        },
+        {
+            "id": 4,
+            "name": "Cabinet 2",
+            "parentId": 2,
+            "type": "Cabinet",
+            "code": "YGN-WH-F1-CAB2",
+            "description": "This is the first floor and second cabinet of Yangon warehouse",
+            "created_at": "2025-09-09T01:05:12.123+00:00",
+            "updated_at": "2025-09-09T01:05:12.123+00:00"
+        },
+        {
+            "id": 5,
+            "name": "Floor 2",
+            "parentId": 1,
+            "type": "Floor",
+            "code": "YGN-WH-F2",
+            "description": "This is the second floor of Yangon warehouse",
+            "created_at": "2025-09-12T00:27:06.939+00:00",
+            "updated_at": "2025-09-12T00:27:06.939+00:00"
+        },
+        {
+            "id": 6,
+            "name": "Cabinet 1",
+            "parentId": 5,
+            "type": "Cabinet",
+            "code": "YGN-WH-F2-CAB1",
+            "description": "This is the second floor and first cabinet of Yangon warehouse",
+            "created_at": "2025-09-12T00:28:51.420+00:00",
+            "updated_at": "2025-09-12T00:28:51.420+00:00"
+        },
+        {
+            "id": 7,
+            "name": "Mandalay Warehouse",
+            "parentId": null,
+            "type": "Warehouse",
+            "code": "MDY-WH",
+            "description": "This is the Mandalay main warehouse",
+            "created_at": "2025-09-13T10:00:00.000+00:00",
+            "updated_at": "2025-09-13T10:00:00.000+00:00"
+        },
+        {
+            "id": 8,
+            "name": "Floor 1",
+            "parentId": 7,
+            "type": "Floor",
+            "code": "MDY-WH-F1",
+            "description": "First floor of Mandalay warehouse",
+            "created_at": "2025-09-13T10:05:00.000+00:00",
+            "updated_at": "2025-09-13T10:05:00.000+00:00"
+        },
+        {
+            "id": 9,
+            "name": "Cabinet 1",
+            "parentId": 8,
+            "type": "Cabinet",
+            "code": "MDY-WH-F1-CAB1",
+            "description": "First cabinet on first floor of Mandalay warehouse",
+            "created_at": "2025-09-13T10:06:00.000+00:00",
+            "updated_at": "2025-09-13T10:06:00.000+00:00"
+        },
+        {
+            "id": 10,
+            "name": "Floor 2",
+            "parentId": 7,
+            "type": "Floor",
+            "code": "MDY-WH-F2",
+            "description": "Second floor of Mandalay warehouse",
+            "created_at": "2025-09-13T10:10:00.000+00:00",
+            "updated_at": "2025-09-13T10:10:00.000+00:00"
+        },
+        {
+            "id": 11,
+            "name": "Cabinet 1",
+            "parentId": 10,
+            "type": "Cabinet",
+            "code": "MDY-WH-F2-CAB1",
+            "description": "First cabinet on second floor of Mandalay warehouse",
+            "created_at": "2025-09-13T10:12:00.000+00:00",
+            "updated_at": "2025-09-13T10:12:00.000+00:00"
+        }
+    ]
+}

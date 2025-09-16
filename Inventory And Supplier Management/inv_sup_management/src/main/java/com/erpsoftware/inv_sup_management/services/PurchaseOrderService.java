@@ -9,11 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.erpsoftware.inv_sup_management.entity.Inventory;
 import com.erpsoftware.inv_sup_management.entity.Locations;
-import com.erpsoftware.inv_sup_management.entity.Product;
-import com.erpsoftware.inv_sup_management.entity.ProductCategory;
 import com.erpsoftware.inv_sup_management.entity.Purchase_order_items;
 import com.erpsoftware.inv_sup_management.entity.Purchase_orders;
-import com.erpsoftware.inv_sup_management.repo.CategoryRepository;
 import com.erpsoftware.inv_sup_management.repo.PurchaseOrderItemsRepository;
 import com.erpsoftware.inv_sup_management.repo.PurchaseOrdersRepository;
 import com.erpsoftware.inv_sup_management.security.ApiException;
@@ -23,14 +20,17 @@ import com.erpsoftware.inv_sup_management.services.Interfaces.ProductServicesInt
 import com.erpsoftware.inv_sup_management.services.Interfaces.PurchaseOrdersServicesInterface;
 import com.erpsoftware.inv_sup_management.services.Interfaces.StockServicesInterface;
 import com.erpsoftware.inv_sup_management.utils.ResponseJson.PurchaseOrder;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class PurchaseOrderService implements PurchaseOrdersServicesInterface {
 
     private final StockServicesInterface stockService;
-    private final ProductServicesInterface productService;
     private final InventoryServicesInterface inventoryServices;
-    private final LocationServicesInterface locationServices;
+    private final RedisManager Cache = new RedisManager();
+    private final ObjectMapper mapper = new ObjectMapper();
+
     @Autowired
     private PurchaseOrdersRepository purchaseOrdersRepository;
     @Autowired
@@ -40,17 +40,26 @@ public class PurchaseOrderService implements PurchaseOrdersServicesInterface {
             InventoryServicesInterface inventoryServices,
             LocationServicesInterface locationServices) {
         this.stockService = stockService;
-        this.productService = productService;
         this.inventoryServices = inventoryServices;
-        this.locationServices = locationServices;
     }
 
     // --------------------------PURCHASE ORDERS
 
     @Override
     public List<Purchase_orders> getAllPurchaseOrders() {
-        List<Purchase_orders> purchase_orders = purchaseOrdersRepository.findAll();
-        return purchase_orders;
+        try {
+            String key = "order:all";
+            String cacheData = Cache.getData(key);
+            if(cacheData!=null){
+                return mapper.readValue(cacheData, new TypeReference<List<Purchase_orders>>(){});
+            }
+            List<Purchase_orders> purchase_orders = purchaseOrdersRepository.findAll();
+            String json = mapper.writeValueAsString(purchase_orders);
+            Cache.setData(key, json);
+            return purchase_orders;
+        } catch (Exception e) {
+            throw new ApiException("Internal Server Error", 400);
+        }
     }
 
     @Override
@@ -69,8 +78,19 @@ public class PurchaseOrderService implements PurchaseOrdersServicesInterface {
     // -----------------PURCHASE ORDER ITEMS
     @Override
     public List<Purchase_order_items> getPurchaseOrderItems(Integer OrderID) {
-        List<Purchase_order_items> order_items = purchaseOrderItemsRepository.findAllByOrderId(OrderID);
-        return order_items;
+        try {
+            String key = "order:id"+OrderID;
+            String cacheData = Cache.getData(key);
+            if(cacheData!=null){
+                return mapper.readValue(cacheData, new TypeReference<List<Purchase_order_items>>(){});
+            }
+            List<Purchase_order_items> order_items = purchaseOrderItemsRepository.findAllByOrderId(OrderID);
+            String json = mapper.writeValueAsString(order_items);
+            Cache.setData(key, json);
+            return order_items;
+        } catch (Exception e) {
+            throw new ApiException("Internal Server Error", 400);
+        }
     }
 
     @Override

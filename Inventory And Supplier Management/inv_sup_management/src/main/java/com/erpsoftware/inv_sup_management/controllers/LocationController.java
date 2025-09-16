@@ -67,6 +67,16 @@ public class LocationController {
         }
     }
 
+    // @PostMapping("/locations")
+    // public StatusResponder<Locations> createNewLocations(@RequestBody Locations entity) {
+    //     try {
+    //         Locations location = locationServices.saveLocation(entity);
+    //         return new StatusResponder<>("ok", location);
+    //     } catch (Exception e) {
+    //         return new StatusResponder<>("bad", null);
+    //     }
+    // }
+
     @PutMapping("/location")
     public StatusResponder<Locations> updateLocation(@RequestBody Locations entity) {
         try {

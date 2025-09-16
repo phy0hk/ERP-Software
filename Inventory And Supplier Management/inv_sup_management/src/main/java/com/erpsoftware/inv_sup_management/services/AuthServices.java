@@ -18,7 +18,6 @@ public class AuthServices implements AuthServicesInterface{
 
     private String admEmail = "admin@email.com";
     private String admPassword = "Admin123";
-    
     @Autowired
     private TokenService tokenService;
 
