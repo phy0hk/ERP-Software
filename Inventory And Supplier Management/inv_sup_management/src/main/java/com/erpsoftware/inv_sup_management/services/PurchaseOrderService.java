@@ -85,8 +85,8 @@ public class PurchaseOrderService implements PurchaseOrdersServicesInterface {
                 return mapper.readValue(cacheData, new TypeReference<List<Purchase_order_items>>(){});
             }
             List<Purchase_order_items> order_items = purchaseOrderItemsRepository.findAllByOrderId(OrderID);
-            String json = mapper.writeValueAsString(order_items);
-            Cache.setData(key, json);
+                String json = mapper.writeValueAsString(order_items);
+                Cache.setData(key, json);
             return order_items;
         } catch (Exception e) {
             throw new ApiException("Internal Server Error", 400);
@@ -95,14 +95,27 @@ public class PurchaseOrderService implements PurchaseOrdersServicesInterface {
 
     @Override
     public Purchase_order_items getPurchaseOrderItem(Integer PurchaseOrderID) {
-        Purchase_order_items item = purchaseOrderItemsRepository.findById(PurchaseOrderID)
-                .orElseThrow(() -> new RuntimeException("Not Found"));
-        return item;
+        try {
+            String key = "order_item:id"+PurchaseOrderID;
+            String cacheData = Cache.getData(key);
+            if(cacheData!=null){
+                return mapper.readValue(cacheData,new TypeReference<Purchase_order_items>(){});
+            }
+            Purchase_order_items item = purchaseOrderItemsRepository.findById(PurchaseOrderID)
+                    .orElseThrow(() -> new RuntimeException("Not Found"));
+                    String json = mapper.writeValueAsString(item);
+            Cache.setData(key, json);
+            return item;
+        } catch (Exception e) {
+            throw new ApiException("Internal Server Error", 400);
+        }
     }
 
     @Override
     @Transactional
     public PurchaseOrder createPurchaseOrderItems(Purchase_orders orders, List<Purchase_order_items> order_items) {
+        Cache.removeKeys("order");
+        Cache.removeKeys("order_items");
         Purchase_orders createdOrder = savePurchaseOrder(orders);
         for (Purchase_order_items item : order_items) {
             item.setOrderId(createdOrder.getId());

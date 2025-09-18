@@ -4,6 +4,8 @@ import java.util.Set;
 import java.util.HashSet;
 
 import org.springframework.stereotype.Service;
+
+import lombok.val;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.params.ScanParams;
@@ -21,7 +23,9 @@ public class RedisManager {
 
     public void setData(String key, String value) {
         try (Jedis jedis = pool.getResource()) {
-            jedis.setex(key, ttlSeconds, value);
+            if(!value.equals("[]")){
+                jedis.setex(key, ttlSeconds, value);
+            }
         } catch (Exception e) {
             System.err.println("Failed to set data: " + e.getMessage());
         }
