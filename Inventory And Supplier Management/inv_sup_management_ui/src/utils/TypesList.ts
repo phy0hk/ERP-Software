@@ -5,16 +5,34 @@ export type PageRoutes = {
     name:string;
     route:string;
     icon:IconName;
+    detail:string;
 }
 
 export type LocationType = {
-    id:number,
-    name:string,
-    parentId:number | null,
-    type?:string,
-    code?:string,
-    description?:string,
-    created_at?:Date,
-    updated_at?:Date,
-    children?:LocationType[]
+    id:number;
+    name:string;
+    parentId:number | null;
+    type?:string;
+    code?:string;
+    description?:string;
+    created_at?:Date;
+    updated_at?:Date;
+    children?:LocationType[];
+}
+
+export type TableHeaderType = {
+  ColumnNames:string[]|| string|| null||undefined;
+  className:string||null||undefined;
+}
+
+export type TableRowType = {
+  RowValues:string[]||string|| null||undefined;
+  length:number || undefined||null;
+  className:string||null||undefined;
+}
+
+export type TableType = {
+  ColumnNames:string[] || string || null || undefined;
+  RowValues:string[] || string || null || undefined;
+  className:string || null || undefined;
 }

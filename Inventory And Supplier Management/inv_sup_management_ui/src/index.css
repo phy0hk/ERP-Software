@@ -5,14 +5,21 @@
   --font-color:#212121;
   --color-primary:#2196F3;
   --color-secondary:#8BC34A;
+  --color-grayscale:#000000;
   --logo-color:#f9a825;
   --inter:"Inter", sans-serif;
+}
+
+.dark{
+  --bg-color:#000000;
+  --color-grayscale: #ffffff;
 }
 
 @theme{
   --color-font-primary:var(--font-color);
   --color-primary:var(--color-primary);
   --color-secondary:var(--color-secondary);
+  --color-grayscale:var(--color-grayscale);
   --color-background:var(--bg-color);
   --color-logo:var(--logo-color);
   --font-inter:var(--inter);

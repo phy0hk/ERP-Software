@@ -1,7 +1,6 @@
 import { useLocation, useNavigate } from "react-router";
 import type { PageRoutes } from "../../utils/TypesList";
-import * as Icons from "lucide-react"
-import type { LucideProps } from "lucide-react";
+import DynamicIcon from "../common/DynamicIcon.tsx"
 
 export default function NavbarButton({name,route,icon}:PageRoutes){
     const navigate = useNavigate();
@@ -15,7 +14,7 @@ export default function NavbarButton({name,route,icon}:PageRoutes){
     return (
         <button className="flex flex-col group" onClick={handleClick} >
             <div className={` ${pathname==route?"bg-primary/10":""} px-5 py-3 cursor-pointer flex flex-row items-center gap-3`}>
-        <DynamicIcon name={icon}/>
+        <DynamicIcon size={20} name={icon}/>
         <div className="max-sm:hidden">
             {name}
         </div>
@@ -25,15 +24,3 @@ export default function NavbarButton({name,route,icon}:PageRoutes){
     )
 }
 
-type IconName = keyof typeof Icons;
-
-interface DynamicIconProps {
-  name: IconName;
-  size?: number;
-  color?: string;
-}
-
-const DynamicIcon = ({ name, size = 24, color = "currentColor" }: DynamicIconProps) => {
-  const Icon = Icons[name] as React.ComponentType<LucideProps>;
-  return <Icon size={size} color={color} />;
-};

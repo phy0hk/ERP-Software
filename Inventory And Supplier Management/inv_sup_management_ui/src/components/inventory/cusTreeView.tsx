@@ -4,13 +4,13 @@ import { cabinetFiling } from '@lucide/lab';
 import {useState} from "react"
 import { BetweenHorizontalStart, ChevronDown, ChevronUp, Container, Dot, Icon, Warehouse } from 'lucide-react'
 export default function CusTreeView({Data}:props){
-    const [Selected,setSelected] = useEffect<any|null>(null);  
-  const handleOnSelect = (event,nodeId) => {
+    const [Selected,setSelected] = useState<any|null>(null);  
+  const handleOnSelect = (event:React.SyntheticEvent,nodeId) => {
     console.log("Current node is "+nodeId);
     setSelected(nodeId);
   }
     return (
-    <SimpleTreeView onNodeSelect={handleOnSelect}>
+    <SimpleTreeView onItemClick={handleOnSelect}>
         {Data?.map((branch)=>RenderLeaf(branch))}
     </SimpleTreeView>
     )

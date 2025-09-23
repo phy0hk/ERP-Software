@@ -1,5 +1,7 @@
-const url = "http://localhost:8080";
+const hostname:string = window.location.hostname
+const port:number = 8080;
+const url:string = `http://${hostname}:${port}`;
 
-export function getAllLocationsURL(){
+export function getAllLocationsURL():string{
     return url+"/api/v1/locations"
 }
