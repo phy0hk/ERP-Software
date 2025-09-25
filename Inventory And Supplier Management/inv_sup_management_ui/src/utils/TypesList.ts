@@ -21,16 +21,27 @@ export type LocationType = {
 }
 
 export type TableHeaderType = {
-  ColumnNames:string[]|| string|| null||undefined;
+  ColumnNames:string[]|| ColumnName[]|| null||undefined;
   className:string||null||undefined;
 }
 
 export type TableRowType = {
-  RowValues:string[]||string|| null||undefined;
+  RowValues:string[]||ColumnName[]|| null||undefined;
   length:number || undefined||null;
   className:string||null||undefined;
 }
-
+export type ColumnName = {
+  name:string,
+  sizePercent:string
+}
+export type TableCellType = {
+  rowID:string;
+  colID:string;
+  width:string | number;
+  height:string | number;
+  value:string;
+  className:string;
+}
 export type TableType = {
   ColumnNames:string[] || string || null || undefined;
   RowValues:string[] || string || null || undefined;

@@ -4,7 +4,7 @@ import { getAllLocationsURL } from "../utils/APILinks";
 import type { LocationType } from "../utils/TypesList";
 import {Map} from "lucide-react";
 import WarehouseSideBar from "../components/inventory/WarehouseSideBar"
-import {TableHeaders} from "../components/common/table"
+import {Table} from "../components/common/table"
 
 export default function InventoryPage(){
   const [BigTree,setBigTree] = useState<LocationType[]>([])
@@ -43,16 +43,15 @@ setSideOpen(change | !sideOpen);
 }
   return(
         <RootLayout>               
-            <div className="w-full h-full flex flex-row relative">
+            <div className="w-full h-[100vh] scrollbar-hide relative flex flex-row">
               <WarehouseSideBar visible={sideOpen} onClose={handleSidebarClose} Tree={BigTree} />
             <div className="w-fit p-5 overflow-x-auto">
-            <TableHeaders ColumnNames={["Apple","bodyasdfabkaldvfkndsavl","vads","dadsf"]}/>
+            <Table ColumnNames={["Id","Name","Type","Code","Description"]}/>
             {/* <TableViewChildren/>
              <TableViewProducts/>*/}
-            apple
             </div>
            </div>
-<button  className={`sticky left-5 bottom-5 bg-grayscale/10 active:bg-grayscale/30 p-3 rounded-full transition delay-100 ease-in-out sm:hidden ${sideOpen?"-translate-x-100":""}`} onClick={handleSidebarClose}><Map size={20}/></button>
+<button  className={`fixed left-5 bottom-5 bg-grayscale/10 active:bg-grayscale/30 p-3 rounded-full transition delay-100 ease-in-out sm:hidden ${sideOpen?"-translate-x-100":""}`} onClick={handleSidebarClose}><Map size={20}/></button>
         </RootLayout>
     )
 }

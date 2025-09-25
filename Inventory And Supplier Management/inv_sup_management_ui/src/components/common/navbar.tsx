@@ -20,7 +20,7 @@ export default function Navbar(){
                 Inventory Management System
                 </span>
             </h1>
-            <div className='flex flex-col'>
+            <div className='flex flex-col relative'>
             <div className='flex flex-row scrollbar-hide overflow-auto gap-1'>
                 {Pages.map((item,key)=><NavbarButton name={item.name} route={item.route} icon={item.icon} key={key}/>)}
             </div>
