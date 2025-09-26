@@ -40,6 +40,8 @@ export type TableCellType = {
   width:string | number;
   height:string | number;
   value:string;
+  lastRowID:number;
+  lastColID:number;
   className:string;
 }
 export type TableType = {
