@@ -71,13 +71,13 @@ console.log(insideHeight,insideWidth);
 
 const handleMouseDown = (e:React.MouseEvent) =>{  
   setIsDragging(true);
-  window.addEventListener("mousemove",handleMouseMove as any);
-  window.addEventListener("mouseup",handleMouseUp as any);
+  window.addEventListener("mousemove",handleMouseMove);
+  window.addEventListener("mouseup",handleMouseUp);
 }
 const handleMouseUp = (e:React.MouseEvent)=>{
   setIsDragging(false);
-  window.removeEventListener("mousemove",handleMouseMove as any);
-  window.removeEventListener("mouseup",handleMouseUp as any);
+  window.removeEventListener("mousemove",handleMouseMove);
+  window.removeEventListener("mouseup",handleMouseUp);
 }
 const handleMouseMove = (e:React.MouseEvent)=>{
   if(isDragging){
