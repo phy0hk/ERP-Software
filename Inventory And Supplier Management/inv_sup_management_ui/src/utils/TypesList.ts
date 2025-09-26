@@ -45,7 +45,8 @@ export type TableCellType = {
   className:string;
 }
 export type TableType = {
-  ColumnNames:string[] || string || null || undefined;
-  RowValues:string[] || string || null || undefined;
-  className:string || null || undefined;
+  ColumnNames:string[] | string | null | undefined;
+  RowValues:string[] | string | null | undefined;
+  className:string | null | undefined;
+  TableWidth:number | null;
 }

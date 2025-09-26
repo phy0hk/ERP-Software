@@ -46,7 +46,7 @@ setSideOpen(change | !sideOpen);
             <div className="w-full h-[100vh] scrollbar-hide relative flex flex-row">
               <WarehouseSideBar visible={sideOpen} onClose={handleSidebarClose} Tree={BigTree} />
             <div className="w-fit p-5 overflow-x-auto">
-            <Table ColumnNames={["Id","Name","Type","Code","Description"]}/>
+            <Table ColumnNames={["Id","Name","Type","Code","Description"]} RowValues={[["a","b","c","d","e"],["a","b","c","d","e"],["a","b","c","d","e"],["a","b","c","d","e"],["a","b","c","d","e"],["a","b","c","d","e"]]}/>
             {/* <TableViewChildren/>
              <TableViewProducts/>*/}
             </div>

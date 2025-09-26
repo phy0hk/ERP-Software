@@ -9,7 +9,7 @@ export default function WarehouseSideBar({Tree,visible=false,onClose}:{Tree:Loca
     }
   }
   return(
-    <div className={`max-sm:absolute bg-gray-200 justify-between flex flex-row transition delay-100 gap-2 ease-in-out ${visible?"":"max-sm:-translate-x-full"} w-80 h-full p-3`}>
+    <div className={`max-sm:absolute z-100 bg-gray-200 justify-between flex flex-row transition delay-100 gap-2 ease-in-out ${visible?"":"max-sm:-translate-x-full"} w-80 h-full p-3`}>
     <div className="h-full w-full">
     <CusTreeView Data={Tree}/>
     </div>
