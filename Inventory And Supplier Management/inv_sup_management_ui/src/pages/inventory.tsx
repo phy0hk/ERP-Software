@@ -49,12 +49,21 @@ const fetchChildLocations=async (id:number)=>{
     const res = await fetch(getChildLocationsURL(id));
     const jsonData = await res.json();
     const data = jsonData.data;
-      let temp = []
+    let temp = []
 for(const item of data){
   temp.push([item.id,item.name,item.type,item.code,item.description]) 
 }
+const Node:LocationType = fetchNodeByID(id,BigTree);
+const childIDs = getAllChildIDs(Node);
 setLocationDatas(temp)
-fetchInventoryItems(id);
+let invItems = [];
+console.log(childIDs);
+if(childIDs===undefined) setInventoryItems(await fetchInventoryItems(id));
+for(const cid of childIDs){
+  const invTemp =await  fetchInventoryItems(cid);
+  invItems = [...invItems,...invTemp]
+}
+setInventoryItems(invItems)
   } catch (error) {
     console.error(error);
     
@@ -66,23 +75,46 @@ const fetchInventoryItems=async (id:number)=>{
     const res = await fetch(getInventoryItemsWithIdURL(id));
     const jsonData = await res.json();
     const data = jsonData.data;
-    console.log(data);
+
     
     let temp = [];
     for(const item of data){
       temp.push([item.id,item.productId,"",item.locationId,item.quantity,item.reserved|0])
     }
-    setInventoryItems(temp);
+    return temp;
     
   } catch (error) {
     console.error(error);
     
   }
 }
+const getAllChildIDs = (parentNode:LocationType)=>{
+  let childIDs = [];
+  if(parentNode===undefined) return;
+  const children = parentNode.children;
+  if(children===undefined) return;
+    for(const child of children){
+        childIDs.push(child.id);
+        const tempChilds = getAllChildIDs(child)
+        if(tempChilds!==undefined){childIDs = [...childIDs,...tempChilds]}
+  }
+  return childIDs;
+}
+
+const fetchNodeByID = (id:number,Nodes:LocationType[]) =>{
+   if(Nodes===undefined) return;
+   for(const Node of Nodes){    
+     if(Node.id == id) return Node;
+     if(Node.children!==undefined) fetchNodeByID(id,Node.children);
+   }
+   return;
+}
 
 const handleSidebarClose = (change)=>{
 setSideOpen(change | !sideOpen);
 }
+
+
   return(
         <RootLayout>
             <div className="w-full h-[100vh] scrollbar-hide relative flex flex-row">
