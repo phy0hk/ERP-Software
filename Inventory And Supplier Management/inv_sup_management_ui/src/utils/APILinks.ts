@@ -8,3 +8,6 @@ export function getAllLocationsURL():string{
 export function getChildLocationsURL(id:number):string{
   return url+"/api/v1/locations/parent/"+id
 }
+export function getInventoryItemsWithIdURL(id:number):string{
+  return url+"/api/v1/inventory/getAll/location?id="+id;
+}

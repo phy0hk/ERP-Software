@@ -1,44 +1,12 @@
-import {TableHeaderType,TableRowType,TableType,TableCellType} from "../../utils/TypesList.ts"
+import {TableType,TableCellType} from "../../utils/TypesList.ts"
 import {useState,useEffect,useRef,React} from "react"
-export function TableHeaders({ColumnNames,className}:TableHeaderType){
-return (
-  <div className={`flex flex-row w-fit border-grayscele border-1
-    ${ColumnNames===undefined || ColumnNames===null ?"hidden":""} 
-    ${className}`}>
 
-  {ColumnNames && ColumnNames.map((name,index)=>{ 
-    const lastIndex:number = ColumnNames.length-1;
-    const isLast:string = lastIndex===index?"flex-1":"border-r-1";
-    return (
-     <div key={index} className={`p-2 hover:bg-grayscale/10 w-50 ${isLast}`}>{name}</div>
-    )
-  }
-   )}
-  </div>
-)
-}
-
-export function TableRow({RowValues,className}:TableRowType){
-return (
-  <div className={`flex flex-row border-grayscele border-1 ${className}`}>
-    
-  {RowValues && RowValues.map((name,index)=>{
-    const lastIndex:number = RowValues.length-1;
-    const isLast:string = lastIndex===index?"flex-1":"border-r-1";
-    return(
-      <div key={index} className={`p-2 hover:bg-grayscale/10 ${isLast}`}>{name}</div>
-    )
-  })}
-  </div>
-)
-}
-
-export function Table({ColumnNames,RowValues,className,TableWidth=1000}:TableType){
+export function Table({ColumnNames,RowValues,className,TableWidth=1000,rowHeight,colResize=false,rowResize=false}:TableType){
   const [colLength,setColLength] = useState(0);
   const [rowLength,setRowLength] = useState(0);
   const [colWidths,setColWidths] = useState<number[]>([]);
   const [rowHeights,setRowHeights] = useState<number[]>([40]);
-
+  
   useEffect(()=>{
     if(ColumnNames!==undefined){
       setColLength(ColumnNames.length)
@@ -54,7 +22,7 @@ export function Table({ColumnNames,RowValues,className,TableWidth=1000}:TableTyp
   },[ColumnNames])
   useEffect(()=>{
     if(RowValues){
-      setRowHeights(new Array(RowValues.length+1).fill(40))
+      setRowHeights(new Array(RowValues.length+1).fill(rowHeight | 40))
     }
   },[RowValues])
 
@@ -71,18 +39,36 @@ export function Table({ColumnNames,RowValues,className,TableWidth=1000}:TableTyp
     })
   }
 
+  const handleHeightChange = (changedHeight:number,rowID:number)=>{
+    setRowHeights((prev)=>{
+      const temp = [...prev];
+      const newHeight = temp[rowID]+changedHeight;
+      const neightborHeight = temp[rowID+1]-changedHeight;
+      if(newHeight>=20 && neightborHeight>=20){
+      temp[rowID] = newHeight;
+      temp[rowID+1] = neightborHeight;
+      }
+      return temp;
+    })
+  }
+
   return (
-    <div className={`flex flex-col`}>
+    <div className={`flex flex-col ${className}`}>
      <div className={`flex flex-row w`}>
      {ColumnNames && ColumnNames.map((item,index)=>{
-       return (<TableCell rowID={0} colID={index} key={index} width={colWidths[index]} height={rowHeights[0]} lastColID={colLength} onWidthChange={(changed)=>handleWidthChange(changed,index)} lastRowID={rowLength} value={item}/>)
+       return (<TableCell rowID={0} colID={index} key={index} className={"font-semibold"} width={colWidths[index]} colResize={colResize} height={40} lastColID={colLength} onWidthChange={(changed)=>handleWidthChange(changed,index)} lastRowID={rowLength} value={item}/>)
      })}
      </div>
      {
        RowValues && RowValues.map((Row,RowIndex)=>{
-return (<div className={`flex flex-row`}>
-        {Row.map((item,ColIndex)=>{
-  return (<TableCell rowID={RowIndex+1} colID={ColIndex} width={colWidths[ColIndex]} height={rowHeights[RowIndex]} lastColID={colLength} lastRowID={rowLength} value={item}/>)
+return (<div className={`flex flex-row`} key={RowIndex}>
+        {new Array(colLength).fill(0).map((val,ColIndex)=>{
+          const item = RowValues[RowIndex][ColIndex];
+  return (<TableCell rowID={RowIndex+1} colID={ColIndex} key={ColIndex}
+          width={colWidths[ColIndex]} rowResize={rowResize} 
+          onHeightChange={(changedHeight)=>handleHeightChange(changedHeight,RowIndex+1)} 
+          height={rowHeights[RowIndex+1]} lastColID={colLength} 
+          lastRowID={rowLength} value={item}/>)
 })}</div>)
        })
      }
@@ -90,11 +76,12 @@ return (<div className={`flex flex-row`}>
   );
 }
 
-export function TableCell({rowID,colID,lastRowID,lastColID,value,width=100,height=150,className,onWidthChange}:TableCellType){
+export function TableCell({rowID,colID,lastRowID,lastColID,value,width=150,height=50,className,onWidthChange,onHeightChange,colResize=false,rowResize=false}:TableCellType){
 // const [insideWidth,setInsideWidth] = useState<number>(width);
 // const [insideHeight,setInsideHeight] = useState<number>(height);
 const startPos = useRef<{x:number,y:number}>({x:0,y:0});
 const DragSide= useRef<string|null>(null);
+
 // useEffect(()=>{
 // console.log("Height "+insideHeight,"Width"+insideWidth);
 //
@@ -106,23 +93,13 @@ const handleMouseDown = (e:React.MouseEvent,Side:string) =>{
   window.addEventListener("mousemove",handleMouseMove);
   window.addEventListener("mouseup",handleMouseUp);
 }
-const handleTouchStart = (e:React.TouchEvent,Side:string) =>{
-  const touch = e.touches[0]
-  startPos.current = {x:touch.clientX,y:touch.clientY}
- DragSide.current = Side
- window.addEventListener("touchmove",handleTouchMove);
- window.addEventListener("touchend",handleTOuchEnd);
-}
+
 const handleMouseUp = (e:React.MouseEvent)=>{
   DragSide.current = null
   window.removeEventListener("mousemove",handleMouseMove);
   window.removeEventListener("mouseup",handleMouseUp);
 }
-const handleTouchEnd = (e:React.TouchEvent)=>{
-  DragSide.current = null
-  window.removeEventListener("touchmove",handleTouchMove);
-  window.removeEventListener("touchend",handleTouchEnd)
-}
+
 const handleMouseMove = (e:React.MouseEvent)=>{
   
   if(DragSide===null) return;
@@ -132,25 +109,16 @@ const changedPosY = e.clientY - startPos.current.y;
 startPos.current = {x:e.clientX,y:e.clientY}
 updatePos(changedPosX,changedPosY)
 }
-const handleTouchMove = (e:React.TouchEvent)=>{
-  const touch = e.touches[0];
-  if(!touch) return;
-  const changedPosX = touch.clientX - startPos.current.x;
-  const changedPosY = touch.clientY - startPos.current.y;
-  startPos.current = {x:touch.clientX,y:touch.clientY};
-  updatePos(changedPosX,changedPosY)
-}
 
 function updatePos(changedPosX:number,changedPosY:number){
-if(DragSide.current==="Right" && colID!==lastColID-1){
-    // setInsideWidth((prev)=>prev+changedPosX);
+if(DragSide.current==="Right" && colID!==lastColID-1 && colResize){
 widthChange(changedPosX)
-    }else if(DragSide.current==="Left" && colID!==0){ 
-    // setInsideWidth((prev)=>prev-changedPosX);
-}else if(DragSide.current==="Top"){
-    // setInsideHeight((prev)=>prev-changedPosY);
-}else if(DragSide.current==="Bottom"){
-  // setInsideHeight((prev)=>prev+changedPosY);
+}else if(DragSide.current==="Left" && colID!==0 && colResize){ 
+widthChange(-changedPosX)
+}else if(DragSide.current==="Top" && rowID!==0 && rowResize){
+heightChange(-changedPosY)
+}else if(DragSide.current==="Bottom" && rowID!==lastRowID && rowID!==0 && rowResize){
+heightChange(changedPosY)
 }
 }
 
@@ -160,18 +128,29 @@ if(onWidthChange!==undefined){
 }
 }
 
+function heightChange(changedHeight:number){
+  if(onHeightChange!==undefined){
+    onHeightChange(changedHeight)
+  }
+}
 
   return (
-    <div className={`relative px-3 py-2 ${className}`} style={{width,height}}>
-    {/*Top Border*/}
-      <div className={`absolute top-0 left-0 right-0 h-1 border-grayscale border-t-1 ${rowID>0?"hidden":""}`}></div>
-{/*Bottom Border*/}
-      <div className={`absolute bottom-0 left-0 right-0 h-1 border-grayscale border-b-1`}></div>
- {/*Left Border*/} 
-      <div onMouseDown={(e)=>handleMouseDown(e,"Left")} className={`absolute top-0 bottom-0 left-0 w-1 border-grayscale border-l-1 ${colID===0?"":"hidden"} ${rowID===0?"hover:cursor-col-resize":""}`}></div>
-{/*Right Border*/}
-      <div onMouseDown={(e)=>handleMouseDown(e,"Right")} className={`absolute top-0 right-0 bottom-0 border-grayscale border-r-1 w-1 ${lastColID-1!==colID && rowID===0?"hover:cursor-col-resize":""}`}></div>
-      <div className={`overflow-auto scrollbar-hide ${rowID===0?"select-none":""}`}>{value}</div>
+    <div className={`relative px-3 py-2 overflow-hidden  ${className}`} style={{width,height}}>
+    {/*top border*/}
+      <div className={`absolute top-0 left-0 right-0 h-2 border-grayscale border-t-1 select-none ${rowID===0?"":"hidden"}`}></div>
+{/*bottom border*/}
+      <div onMouseDown={(e)=>handleMouseDown(e,"Bottom")} 
+      className={`absolute bottom-0 left-0 right-0 h-2 border-grayscale  border-b-1 select-none
+      ${rowID!==lastRowID && rowID!==0 && rowResize?"hover:cursor-row-resize":""}`}></div>
+ {/*left border*/} 
+      <div className={`absolute top-0 bottom-0 left-0 w-2 border-grayscale border-l-1 select-none ${colID===0?"":"hidden"}`}></div>
+{/*right border*/}
+      <div onMouseDown={(e)=>handleMouseDown(e,"Right")} 
+      className={`absolute top-0 right-0 bottom-0 border-grayscale border-r-1 w-2 select-none
+        ${lastColID-1!==colID && rowID===0 && colResize?"hover:cursor-col-resize":""}`}></div>
+      <div className={`overflow-x-auto whitespace-nowrap scrollbar-hide ${rowID===0?"select-none":""}`}>
+      {value}
+      </div>
     </div>
   )
 }

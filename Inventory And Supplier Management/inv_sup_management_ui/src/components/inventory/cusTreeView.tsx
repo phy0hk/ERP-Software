@@ -2,12 +2,12 @@ import {SimpleTreeView, TreeItem} from '@mui/x-tree-view'
 import type { LocationType } from '../../utils/TypesList'
 import { cabinetFiling } from '@lucide/lab';
 import {useState} from "react"
-import { BetweenHorizontalStart, ChevronDown, ChevronUp, Container, Dot, Icon, Warehouse } from 'lucide-react'
-export default function CusTreeView({Data}:props){
-    const [Selected,setSelected] = useState<any|null>(null);  
+import { BetweenHorizontalStart, ChevronDown, ChevronUp, Container, Dot, Icon, Warehouse} from 'lucide-react'
+export default function CusTreeView({Data,onSelect}:props){
   const handleOnSelect = (event:React.SyntheticEvent,nodeId) => {
-    console.log("Current node is "+nodeId);
-    setSelected(nodeId);
+    if(onSelect!==undefined){
+      onSelect(nodeId);      
+    }
   }
     return (
     <SimpleTreeView onItemClick={handleOnSelect}>
@@ -47,5 +47,6 @@ function CustomTreeItem({type,name}:LocationType){
 }
 
 type props = {
-    Data:LocationType[]
+    Data:LocationType[];
+    onSelect:any|undefined;
 }

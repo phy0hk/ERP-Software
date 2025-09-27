@@ -19,17 +19,6 @@ export type LocationType = {
     updated_at?:Date;
     children?:LocationType[];
 }
-
-export type TableHeaderType = {
-  ColumnNames:string[]|| ColumnName[]|| null||undefined;
-  className:string||null||undefined;
-}
-
-export type TableRowType = {
-  RowValues:string[]||ColumnName[]|| null||undefined;
-  length:number || undefined||null;
-  className:string||null||undefined;
-}
 export type ColumnName = {
   name:string,
   sizePercent:string
@@ -43,10 +32,14 @@ export type TableCellType = {
   lastRowID:number;
   lastColID:number;
   className:string;
+  colResize:boolean;
+  rowResize:boolean;
 }
 export type TableType = {
   ColumnNames:string[] | string | null | undefined;
   RowValues:string[] | string | null | undefined;
   className:string | null | undefined;
   TableWidth:number | null;
+  colResize:boolean;
+  rowResize:boolean;
 }

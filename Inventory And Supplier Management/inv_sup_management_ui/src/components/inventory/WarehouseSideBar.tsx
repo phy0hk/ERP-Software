@@ -2,16 +2,21 @@ import type { LocationType } from "../utils/TypesList";
 import {X} from "lucide-react"
 import CusTreeView from "./cusTreeView";
 
-export default function WarehouseSideBar({Tree,visible=false,onClose}:{Tree:LocationType[],visible:boolean,onClose:any}){
+export default function WarehouseSideBar({Tree,visible=false,onClose,onSelect}:{Tree:LocationType[],visible:boolean,onClose:any,onSelect:any|undefined}){
   const handleClose = () =>{
     if(onClose!==undefined){
       onClose()
     }
   }
+  const handleOnSelect=(id:number)=>{
+if(onSelect!==undefined){
+  onSelect(id)
+}
+  }
   return(
     <div className={`max-sm:absolute z-100 bg-gray-200 justify-between flex flex-row transition delay-100 gap-2 ease-in-out ${visible?"":"max-sm:-translate-x-full"} w-80 h-full p-3`}>
     <div className="h-full w-full">
-    <CusTreeView Data={Tree}/>
+    <CusTreeView Data={Tree} onSelect={handleOnSelect}/>
     </div>
     <div className="w-10 sm:w-0">
 <button onClick={handleClose} className={`sm:hidden p-1 hover:bg-grayscale/10 rounded`}><X/></button>
