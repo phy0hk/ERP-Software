@@ -54,16 +54,19 @@ for(const item of data){
   temp.push([item.id,item.name,item.type,item.code,item.description]) 
 }
 const Node:LocationType = fetchNodeByID(id,BigTree);
+
 const childIDs = getAllChildIDs(Node);
 setLocationDatas(temp)
 let invItems = [];
-console.log(childIDs);
 if(childIDs===undefined) setInventoryItems(await fetchInventoryItems(id));
+else{
 for(const cid of childIDs){
   const invTemp =await  fetchInventoryItems(cid);
   invItems = [...invItems,...invTemp]
 }
 setInventoryItems(invItems)
+}
+
   } catch (error) {
     console.error(error);
     
@@ -105,9 +108,11 @@ const fetchNodeByID = (id:number,Nodes:LocationType[]) =>{
    if(Nodes===undefined) return;
    for(const Node of Nodes){    
      if(Node.id == id) return Node;
-     if(Node.children!==undefined) fetchNodeByID(id,Node.children);
+     if(Node.children!==undefined) {
+      const found = fetchNodeByID(id,Node.children)
+      if(found) return found;
+     };
    }
-   return;
 }
 
 const handleSidebarClose = (change)=>{
