@@ -5,7 +5,7 @@ import type { LocationType } from "../utils/TypesList";
 import {Map} from "lucide-react";
 import WarehouseSideBar from "../components/inventory/WarehouseSideBar"
 import {Table} from "../components/common/table"
-
+import useWasm from "../utils/wasmLoader"
 export default function InventoryPage(){
   const [BigTree,setBigTree] = useState<LocationType[]>([]);
   const [locationDatas,setLocationDatas] = useState<string[]>([]);
@@ -16,6 +16,7 @@ export default function InventoryPage(){
   const [inventoryItems,setInventoryItems] = useState<string[]>([]);
 
  async function getAllLocations(){
+   const testWasm = useWasm("/cpp/inventory_cpp.js");
       const res = await fetch(getAllLocationsURL());
       try {
           const resJson = await res.json();
@@ -46,6 +47,7 @@ export default function InventoryPage(){
 
 const fetchChildLocations=async (id:number)=>{
   try {
+   
     const res = await fetch(getChildLocationsURL(id));
     const jsonData = await res.json();
     const data = jsonData.data;
