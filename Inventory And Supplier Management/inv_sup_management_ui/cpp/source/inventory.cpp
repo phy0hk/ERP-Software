@@ -10,25 +10,47 @@ std::vector<int> getAllChildIDs(const LocationType& parentNode) {
     const std::vector<LocationType>& children = parentNode.children;
     for (const LocationType& child : children) {
       result.push_back(child.id);
-        // Recursive call
       std::vector<int> subChildIDs = getAllChildIDs(child);
       result.insert(result.end(), subChildIDs.begin(), subChildIDs.end());
     }
     return result;
 }
 
-std::vector<LocationType> plantTree(){
+std::vector<LocationType> PlantTree(const std::vector<LocationType>& Locations,
+                                    const std::vector<LocationType>& AllLocations) {
+    std::vector<LocationType> data;
+    for (const auto& location : Locations) {
+        LocationType parent = location; // copy to modify children
+        std::vector<LocationType> children;
 
+        // Filter AllLocations where parentId matches
+        std::copy_if(AllLocations.begin(), AllLocations.end(),
+                     std::back_inserter(children),
+                     [&parent](const LocationType& l) { return l.parentId == parent.id; });
+
+        if (!children.empty()) {
+            parent.children = PlantTree(children, AllLocations); // recursive call
+        }
+
+        data.push_back(parent);
+    }
+
+    return data;
+}
+LocationType getNodeByID(const int& id, const std::vector<LocationType>& nodes) {
+    for (const auto& node : nodes) {
+      //if node is found return it
+        if (node.id == id) return node;
+
+        if (!node.children.empty()) {
+          //if node children is not empty continue finding in child recursively
+            LocationType found = getNodeByID(id, node.children);
+            if (found.id != -1) return found;
+        }
+    }
+    return LocationType();
 }
 
-LocationType getNodeByID(const int& id,const std::vector<LocationType>& Nodes){
-  for(const LocationType Node : Nodes){
-    if(Node.id == id) return Node;
-    LocationType found = getNodeByID(id,Node.children);
-    if(found.id==-1) return found;
-  }
-  return LocationType{};
-}
 
 EMSCRIPTEN_BINDINGS(inventory_module) {
     // Bind LocationType
@@ -49,7 +71,7 @@ EMSCRIPTEN_BINDINGS(inventory_module) {
 
     // Bind function
     function("getAllChildIDs", &getAllChildIDs);
-    function("plantTree", &plantTree);
+    function("PlantTree", &PlantTree);
     function("getNodeByID",&getNodeByID);
     function("toJs",&toJs);
 }

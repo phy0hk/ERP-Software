@@ -1,8 +1,9 @@
-import type LocationType from "./TypesList";
+import type {LocationType} from "./TypesList";
 import useWasm from "./wasmLoader";
-let inventoryWASML:any|null = null;
-export function toWasmLocationType(loc: LocationType): any {
-  if(!inventoryWASM) useWasm("/cpp/inventory_cpp.js");
+
+
+export async function toWasmLocationType(loc: LocationType):Promise<any> {
+  const inventoryWASM = await useWasm("/cpp/inventory_cpp.js")
   const wasmLoc = new inventoryWASM.LocationType();
   wasmLoc.id = loc.id;
   wasmLoc.name = loc.name;
@@ -15,17 +16,25 @@ export function toWasmLocationType(loc: LocationType): any {
 
   // Construct children as a WASM VectorLocation
   const wasmChildren = new inventoryWASM.VectorLocation();
-  (loc.children ?? []).forEach(child => wasmChildren.push_back(toWasmLocationType(child)));
+  if (loc.children && loc.children.length > 0) {
+    for (const child of loc.children) {
+      const wasmChild = await toWasmLocationType(child); // await here
+      wasmChildren.push_back(wasmChild);
+    }
+  }
   wasmLoc.children = wasmChildren;
-
   return wasmLoc;
 }
 
 //transform Wasm LocationType obj to Js LocationType obj
-export function toJsLocationType(obj:any):LocationType{
-  const inventoryWASM = useWasm("/cpp/inventory_cpp.js")
-  if(!inventoryWASM) return;
-    const Loc:LocationType = {};
+export async function toJsLocationType(obj:any):Promise<LocationType>{
+  const inventoryWASM = await useWasm("/cpp/inventory_cpp.js")
+    const Loc:LocationType = {
+      id: 0,
+      name: "",
+      parentId: null
+    };
+
     Loc.id = obj.id
     Loc.name = obj.name,
     Loc.parentId = obj.parentId;
@@ -36,9 +45,10 @@ export function toJsLocationType(obj:any):LocationType{
     Loc.updated_at = obj.updated_at;
     const tempChild:LocationType[] = [];
     for(let i = 0;i<obj.children.size();i++){
-      tempChild.push(toJsLocationType(obj.children.get(i)));
+      toJsLocationType(obj.children.get(i)).then((data)=>{
+        tempChild.push(data);
+      })
     }
     Loc.children = tempChild;
     return Loc;
 }
-

@@ -6,9 +6,10 @@ import {Map} from "lucide-react";
 import WarehouseSideBar from "../components/inventory/WarehouseSideBar"
 import {Table} from "../components/common/table"
 import useWasm from "../utils/wasmLoader"
-import {toWasmLocationType,toJsLocationType} from "../Utils/TypeConvertor"
+import {toWasmLocationType,toJsLocationType} from "../utils/TypeConvertor"
 export default function InventoryPage(){
   const [BigTree,setBigTree] = useState<LocationType[]>([]);
+  const [AllLocationsList,setAllLocationsList] = useState<LocationType[]>([])
   const [locationDatas,setLocationDatas] = useState<string[][]|null|undefined>(null);
   const [sideOpen,setSideOpen] = useState<boolean>(false);
   const [selectedLocation,setSelectedLocation] = useState<number|null>(null);
@@ -16,14 +17,13 @@ export default function InventoryPage(){
   const [locatoinHeders,setLocationHeaders] = useState<string[]>(["ID","Name","Type","Code","Description"]);
   const [inventoryItems,setInventoryItems] = useState<string[][]|undefined>([]);
   const [inventoryWASM,setInventoryWASM] = useState<any>(null);
- async function getAllLocations(){
-   
+ async function getAllLocations(){    
       const res = await fetch(getAllLocationsURL());
+      
       try {
           const resJson = await res.json();
           const datas:LocationType[] = resJson.data;
-          const filteredList = datas.filter((item)=>item.parentId===null);
-          setBigTree(PlantTree(filteredList,datas));
+          setAllLocationsList(datas)
       } catch (error) {
           console.log(error);
           return;
@@ -40,59 +40,81 @@ export default function InventoryPage(){
   },[])
 
 
+  useEffect(()=>{
+    if(inventoryWASM!==null && inventoryWASM!== undefined && AllLocationsList.length>0){
+   plantBigTree();
+    }
+  },[inventoryWASM,AllLocationsList])
 
-  function PlantTree(Locations:LocationType[],AllLocations:LocationType[]):LocationType[]{
-      return Locations.map((parent)=>{
-          const children = AllLocations.filter(item=>item.parentId===parent.id)
-          if(children.length>0){
-              parent.children = PlantTree(children,AllLocations);
-          }else{
-              parent.children = undefined;
+  async function plantBigTree(){
+        const filteredList = AllLocationsList.filter((item)=>item.parentId===null);
+          const filteredWasmList = new inventoryWASM.VectorLocation();
+          const AllLocationWasmList = new inventoryWASM.VectorLocation();         
+          
+          for(const item of filteredList){
+            filteredWasmList.push_back(await toWasmLocationType(item))            
           }
-          return parent;
-      })
-  }   
+          for(const item of AllLocationsList){
+            AllLocationWasmList.push_back(await toWasmLocationType(item))
+          };
+          const jsonBigTree:LocationType[] = [];
+          const createdTree = inventoryWASM.PlantTree(filteredWasmList,AllLocationWasmList);
+          for(let i=0;i<createdTree.size();i++){
+            jsonBigTree.push(await toJsLocationType(createdTree.get(i)));
+          }
+          setBigTree(jsonBigTree);
+  }
+  // function PlantTree(Locations:LocationType[],AllLocations:LocationType[]):LocationType[]{
+  //     return Locations.map((parent)=>{
+  //         const children:LocationType[] = AllLocations.filter(item=>item.parentId===parent.id)
+  //         if(children.length>0){
+  //             parent.children = PlantTree(children,AllLocations);
+  //         }else{
+  //             parent.children = undefined;
+  //         }
+  //         return parent;
+  //     })
+  // }   
 
   useEffect(()=>{
     getAllLocations();      
   },[])
 
 
-const fetchChildLocations=async (id:number)=>{
+const fetchChildLocations=async (id:number)=>{  
   try {
     const res = await fetch(getChildLocationsURL(id));
     const jsonData = await res.json();
-    const data = jsonData.data;
+    const data = await jsonData.data;
     let temp:string[][] = [];
 for(const item of data){
   temp.push([item.id,item.name,item.type,item.code,item.description]) 
 }
 
-const Node:LocationType = fetchNodeByID(id,BigTree);
 const BigTreeTrasnform = new inventoryWASM.VectorLocation();
 for(const Branch of BigTree){
-BigTreeTrasnform.push_back(toWasmLocationType(Branch))
+  BigTreeTrasnform.push_back(await toWasmLocationType(Branch))
 }
-
-const beforeTran = inventoryWASM.getNodeByID(id,BigTreeTrasnform);
-
+const findNode = inventoryWASM.getNodeByID(id,BigTreeTrasnform);
+const Node:LocationType = await toJsLocationType(findNode);
 
 const childIDs = [];
+const WasmNode = await toWasmLocationType(Node);
 
-const tempTestChildIds = inventoryWASM.getAllChildIDs(toWasmLocationType(Node));
-for(let i=0;i<tempTestChildIds.size();i++){
- childIDs.push(tempTestChildIds.get(i));
+const tempChildIds = inventoryWASM.getAllChildIDs(WasmNode)
+
+
+for(let i=0;i<tempChildIds.size();i++){
+ childIDs.push(tempChildIds.get(i));
 }
-const tempTypeVal:LocationType = toJsLocationType(beforeTran)
-console.log(tempTypeVal);
-
 
 setLocationDatas(temp);
 let invItems:string[][] = [];
+
 if(childIDs===undefined) setInventoryItems(await fetchInventoryItems(id));
 else{
 for(const cid of childIDs){
-  const invTemp:string[][] = await fetchInventoryItems(cid) ?? [];
+  const invTemp:string[][] = await fetchInventoryItems(cid);
   invItems = [...invItems,...invTemp]
 }
 setInventoryItems(invItems)
@@ -120,21 +142,20 @@ const fetchInventoryItems:(id:number)=>Promise<string[][]|undefined>=async (id:n
 }
 
 
-const fetchNodeByID = (id:number,Nodes:LocationType[]) =>{
-   if(Nodes===undefined) return;
-   for(const Node of Nodes){    
-     if(Node.id == id) return Node;
-     if(Node.children!==undefined) {
-      const found = fetchNodeByID(id,Node.children)
-      if(found) return found;
-     };
-   }
-}
+// const fetchNodeByID = (id:number,Nodes:LocationType[]) =>{
+//    if(Nodes===undefined) return;
+//    for(const Node of Nodes){    
+//      if(Node.id == id) return Node;
+//      if(Node.children!==undefined) {
+//       const found = fetchNodeByID(id,Node.children)
+//       if(found) return found;
+//      };
+//    }
+// }
 
 const handleSidebarClose = ()=>{
 setSideOpen(!sideOpen);
 }
-
 
   return(
         <RootLayout>
@@ -143,7 +164,7 @@ setSideOpen(!sideOpen);
               <div className={`w-full p-5 flex flex-col gap-10`}>
             <div className={`${locationDatas && locationDatas.length>0?"":"hidden"}`}>
             <div className="font-bold text-md h-10 text-grayscale">Sub Locations</div>
-            <Table colResize={true} rowResize={true} RowValues={locationDatas} rowHeight={60} ColumnNames={locatoinHeders}/>
+            <Table colResize={true} rowResize={true} RowValues={locationDatas} rowHeights={60} ColumnNames={locatoinHeders}/>
             {/* <TableViewChildren/>
              <TableViewProducts/>*/}
             </div>
