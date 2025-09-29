@@ -71,7 +71,7 @@ for(const item of data){
 const Node:LocationType = fetchNodeByID(id,BigTree);
 const BigTreeTrasnform = new inventoryWASM.VectorLocation();
 for(const Branch of BigTree){
-BigTreeTrasnform.push_back(toWasmLocationType(Branch,inventoryWASM))
+BigTreeTrasnform.push_back(toWasmLocationType(Branch))
 }
 
 const beforeTran = inventoryWASM.getNodeByID(id,BigTreeTrasnform);
@@ -79,11 +79,13 @@ const beforeTran = inventoryWASM.getNodeByID(id,BigTreeTrasnform);
 
 const childIDs = [];
 
-const tempTestChildIds = inventoryWASM.getAllChildIDs(toWasmLocationType(Node,inventoryWASM));
+const tempTestChildIds = inventoryWASM.getAllChildIDs(toWasmLocationType(Node));
 for(let i=0;i<tempTestChildIds.size();i++){
  childIDs.push(tempTestChildIds.get(i));
 }
-const tempTypeVal:LocationType = toJsLocationType(beforeTran,inventoryWASM)
+const tempTypeVal:LocationType = toJsLocationType(beforeTran)
+console.log(tempTypeVal);
+
 
 setLocationDatas(temp);
 let invItems:string[][] = [];

@@ -1,6 +1,8 @@
-import type LocationType from "./TypesList"
-export function toWasmLocationType(loc: LocationType,inventoryWASM:any): any {
-  if(!inventoryWASM) return;
+import type LocationType from "./TypesList";
+import useWasm from "./wasmLoader";
+let inventoryWASML:any|null = null;
+export function toWasmLocationType(loc: LocationType): any {
+  if(!inventoryWASM) useWasm("/cpp/inventory_cpp.js");
   const wasmLoc = new inventoryWASM.LocationType();
   wasmLoc.id = loc.id;
   wasmLoc.name = loc.name;
@@ -20,7 +22,8 @@ export function toWasmLocationType(loc: LocationType,inventoryWASM:any): any {
 }
 
 //transform Wasm LocationType obj to Js LocationType obj
-export function toJsLocationType(obj:any,inventoryWASM:any):LocationType{
+export function toJsLocationType(obj:any):LocationType{
+  const inventoryWASM = useWasm("/cpp/inventory_cpp.js")
   if(!inventoryWASM) return;
     const Loc:LocationType = {};
     Loc.id = obj.id
