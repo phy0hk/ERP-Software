@@ -36,10 +36,11 @@ export type TableCellType = {
   rowResize:boolean;
 }
 export type TableType = {
-  ColumnNames:string[] | string | null | undefined;
-  RowValues:string[] | string | null | undefined;
-  className:string | null | undefined;
-  TableWidth:number | null;
-  colResize:boolean;
-  rowResize:boolean;
+  ColumnNames:string[] | null | undefined;
+  RowValues:string[][] | null | undefined;
+  className?:string | null | undefined;
+  TableWidth?:number | null;
+  rowHeights?:number | undefined;
+  colResize?:boolean;
+  rowResize?:boolean;
 }

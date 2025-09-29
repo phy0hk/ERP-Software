@@ -6,17 +6,18 @@ import {Map} from "lucide-react";
 import WarehouseSideBar from "../components/inventory/WarehouseSideBar"
 import {Table} from "../components/common/table"
 import useWasm from "../utils/wasmLoader"
+import {toWasmLocationType,toJsLocationType} from "../Utils/TypeConvertor"
 export default function InventoryPage(){
   const [BigTree,setBigTree] = useState<LocationType[]>([]);
-  const [locationDatas,setLocationDatas] = useState<string[]>([]);
+  const [locationDatas,setLocationDatas] = useState<string[][]|null|undefined>(null);
   const [sideOpen,setSideOpen] = useState<boolean>(false);
   const [selectedLocation,setSelectedLocation] = useState<number|null>(null);
   const [inventoryHeaders,setInventoryHeaders] = useState<string[]>(["Inventory ID","Product ID","Product Name","Location ID","Qty","Reserved Qty"]);
   const [locatoinHeders,setLocationHeaders] = useState<string[]>(["ID","Name","Type","Code","Description"]);
-  const [inventoryItems,setInventoryItems] = useState<string[]>([]);
-
+  const [inventoryItems,setInventoryItems] = useState<string[][]|undefined>([]);
+  const [inventoryWASM,setInventoryWASM] = useState<any>(null);
  async function getAllLocations(){
-   const testWasm = useWasm("/cpp/inventory_cpp.js");
+   
       const res = await fetch(getAllLocationsURL());
       try {
           const resJson = await res.json();
@@ -28,7 +29,18 @@ export default function InventoryPage(){
           return;
       }
   }
-   
+
+  //Load Wasm for InventoryPage
+  useEffect(()=>{
+    useWasm("/cpp/inventory_cpp.js").then((module)=>{
+      setInventoryWASM(module)
+    }).catch((e)=>{
+      console.log(e);
+    })
+  },[])
+
+
+
   function PlantTree(Locations:LocationType[],AllLocations:LocationType[]):LocationType[]{
       return Locations.map((parent)=>{
           const children = AllLocations.filter(item=>item.parentId===parent.id)
@@ -47,64 +59,59 @@ export default function InventoryPage(){
 
 const fetchChildLocations=async (id:number)=>{
   try {
-   
     const res = await fetch(getChildLocationsURL(id));
     const jsonData = await res.json();
     const data = jsonData.data;
-    let temp = []
+    let temp:string[][] = [];
 for(const item of data){
   temp.push([item.id,item.name,item.type,item.code,item.description]) 
 }
 const Node:LocationType = fetchNodeByID(id,BigTree);
+const BigTreeTrasnform = new inventoryWASM.VectorLocation();
+for(const Branch of BigTree){
+BigTreeTrasnform.push_back(toWasmLocationType(Branch,inventoryWASM))
+}
 
-const childIDs = getAllChildIDs(Node);
-setLocationDatas(temp)
-let invItems = [];
+const beforeTran = inventoryWASM.getNodeByID(id,BigTreeTrasnform);
+const childIDs = [];
+const tempTestChildIds = inventoryWASM.getAllChildIDs(toWasmLocationType(Node,inventoryWASM));
+for(let i=0;i<tempTestChildIds.size();i++){
+ childIDs.push(tempTestChildIds.get(i));
+}
+console.log(toJsLocationType(beforeTran))
+
+setLocationDatas(temp);
+let invItems:string[][] = [];
 if(childIDs===undefined) setInventoryItems(await fetchInventoryItems(id));
 else{
 for(const cid of childIDs){
-  const invTemp =await  fetchInventoryItems(cid);
+  const invTemp:string[][] = await fetchInventoryItems(cid) ?? [];
   invItems = [...invItems,...invTemp]
 }
 setInventoryItems(invItems)
 }
-
   } catch (error) {
     console.error(error);
     
   }
 }
 
-const fetchInventoryItems=async (id:number)=>{
+const fetchInventoryItems:(id:number)=>Promise<string[][]|undefined>=async (id:number)=>{
   try {
     const res = await fetch(getInventoryItemsWithIdURL(id));
     const jsonData = await res.json();
-    const data = jsonData.data;
-
+    const data:any = jsonData.data;
     
-    let temp = [];
+    let temp:string[][] = [];
     for(const item of data){
-      temp.push([item.id,item.productId,"",item.locationId,item.quantity,item.reserved|0])
+      temp.push([item.id,item.productId,"",item.locationId,item.quantity,item.reserved|0]);
     }
     return temp;
-    
   } catch (error) {
     console.error(error);
-    
   }
 }
-const getAllChildIDs = (parentNode:LocationType)=>{
-  let childIDs = [];
-  if(parentNode===undefined) return;
-  const children = parentNode.children;
-  if(children===undefined) return;
-    for(const child of children){
-        childIDs.push(child.id);
-        const tempChilds = getAllChildIDs(child)
-        if(tempChilds!==undefined){childIDs = [...childIDs,...tempChilds]}
-  }
-  return childIDs;
-}
+
 
 const fetchNodeByID = (id:number,Nodes:LocationType[]) =>{
    if(Nodes===undefined) return;
@@ -117,8 +124,8 @@ const fetchNodeByID = (id:number,Nodes:LocationType[]) =>{
    }
 }
 
-const handleSidebarClose = (change)=>{
-setSideOpen(change | !sideOpen);
+const handleSidebarClose = ()=>{
+setSideOpen(!sideOpen);
 }
 
 
