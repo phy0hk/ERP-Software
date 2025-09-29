@@ -57,6 +57,7 @@ export default function InventoryPage(){
     getAllLocations();      
   },[])
 
+
 const fetchChildLocations=async (id:number)=>{
   try {
     const res = await fetch(getChildLocationsURL(id));
@@ -66,6 +67,7 @@ const fetchChildLocations=async (id:number)=>{
 for(const item of data){
   temp.push([item.id,item.name,item.type,item.code,item.description]) 
 }
+
 const Node:LocationType = fetchNodeByID(id,BigTree);
 const BigTreeTrasnform = new inventoryWASM.VectorLocation();
 for(const Branch of BigTree){
@@ -73,12 +75,15 @@ BigTreeTrasnform.push_back(toWasmLocationType(Branch,inventoryWASM))
 }
 
 const beforeTran = inventoryWASM.getNodeByID(id,BigTreeTrasnform);
+
+
 const childIDs = [];
+
 const tempTestChildIds = inventoryWASM.getAllChildIDs(toWasmLocationType(Node,inventoryWASM));
 for(let i=0;i<tempTestChildIds.size();i++){
  childIDs.push(tempTestChildIds.get(i));
 }
-console.log(toJsLocationType(beforeTran))
+const tempTypeVal:LocationType = toJsLocationType(beforeTran,inventoryWASM)
 
 setLocationDatas(temp);
 let invItems:string[][] = [];
@@ -99,7 +104,7 @@ setInventoryItems(invItems)
 const fetchInventoryItems:(id:number)=>Promise<string[][]|undefined>=async (id:number)=>{
   try {
     const res = await fetch(getInventoryItemsWithIdURL(id));
-    const jsonData = await res.json();
+    const jsonData:any = await res.json();
     const data:any = jsonData.data;
     
     let temp:string[][] = [];

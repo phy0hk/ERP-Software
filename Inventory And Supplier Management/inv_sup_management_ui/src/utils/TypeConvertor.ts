@@ -1,4 +1,6 @@
+import type LocationType from "./TypesList"
 export function toWasmLocationType(loc: LocationType,inventoryWASM:any): any {
+  if(!inventoryWASM) return;
   const wasmLoc = new inventoryWASM.LocationType();
   wasmLoc.id = loc.id;
   wasmLoc.name = loc.name;
@@ -11,14 +13,15 @@ export function toWasmLocationType(loc: LocationType,inventoryWASM:any): any {
 
   // Construct children as a WASM VectorLocation
   const wasmChildren = new inventoryWASM.VectorLocation();
-  (loc.children ?? []).forEach(child => wasmChildren.push_back(toWasmLocation(child)));
+  (loc.children ?? []).forEach(child => wasmChildren.push_back(toWasmLocationType(child)));
   wasmLoc.children = wasmChildren;
 
   return wasmLoc;
 }
 
 //transform Wasm LocationType obj to Js LocationType obj
-export function toJsLocationType(obj:inventoryWASM.LocationType):LocationType{
+export function toJsLocationType(obj:any,inventoryWASM:any):LocationType{
+  if(!inventoryWASM) return;
     const Loc:LocationType = {};
     Loc.id = obj.id
     Loc.name = obj.name,
@@ -30,7 +33,7 @@ export function toJsLocationType(obj:inventoryWASM.LocationType):LocationType{
     Loc.updated_at = obj.updated_at;
     const tempChild:LocationType[] = [];
     for(let i = 0;i<obj.children.size();i++){
-      tempChild.push(toJsLocation(obj.children.get(i)));
+      tempChild.push(toJsLocationType(obj.children.get(i)));
     }
     Loc.children = tempChild;
     return Loc;

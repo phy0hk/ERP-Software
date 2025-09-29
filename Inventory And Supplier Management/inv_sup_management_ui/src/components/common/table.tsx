@@ -8,10 +8,10 @@ export function Table({ColumnNames,RowValues,className,TableWidth=1000,rowHeight
   const [rowHeights,setRowHeights] = useState<number[]>([40]);
   
   useEffect(()=>{
-    if(ColumnNames!==undefined){
+    if(ColumnNames!==undefined && ColumnNames!==null){
       setColLength(ColumnNames.length)
     }
-    if(RowValues!==undefined){
+    if(RowValues!==undefined && RowValues!==null){
       setRowLength(RowValues.length)
     }
   },[ColumnNames,RowValues])
