@@ -27,7 +27,6 @@ export default function InventoryPage(){
   const [DynamicTableWidth,setDynamicTableWidth] = useState(1000);
  async function getAllLocations(){    
       const res = await fetch(getAllLocationsURL());
-      
       try {
           const resJson = await res.json();
           const datas:LocationType[] = resJson.data;
