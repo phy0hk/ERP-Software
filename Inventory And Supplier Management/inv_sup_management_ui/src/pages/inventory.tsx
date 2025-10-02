@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import RootLayout from "../layout/layout";
 import { getAllLocationsURL,getChildLocationsURL,getInventoryItemsWithIdURL } from "../utils/APILinks";
 import type { LocationType } from "../utils/TypesList";
@@ -17,6 +17,8 @@ export default function InventoryPage(){
   const [locatoinHeders,setLocationHeaders] = useState<string[]>(["ID","Name","Type","Code","Description"]);
   const [inventoryItems,setInventoryItems] = useState<string[][]|undefined>([]);
   const [inventoryWASM,setInventoryWASM] = useState<any>(null);
+  const parentTableRef = useRef<HTMLDivElement>(null);
+  const [DynamicTableWidth,setDynamicTableWidth] = useState(1000);
  async function getAllLocations(){    
       const res = await fetch(getAllLocationsURL());
       
@@ -153,26 +155,38 @@ const fetchInventoryItems:(id:number)=>Promise<string[][]|undefined>=async (id:n
 //    }
 // }
 
+useEffect(()=>{
+if(parentTableRef.current){
+setDynamicTableWidth(parentTableRef.current.offsetWidth+1000)
+console.log(parentTableRef.current.offsetWidth);
+}
+},[parentTableRef])
+
 const handleSidebarClose = ()=>{
 setSideOpen(!sideOpen);
 }
+useEffect(() => {
+  console.log(DynamicTableWidth);
+  
+}, [DynamicTableWidth])
+
 
   return(
         <RootLayout>
-            <div className="w-full h-[100vh] scrollbar-hide relative flex flex-row">
+            <div className="w-screen h-[100vh] scrollbar-hide relative flex flex-row">
               <WarehouseSideBar visible={sideOpen} onClose={handleSidebarClose} onSelect={fetchChildLocations} Tree={BigTree} />
-              <div className={`w-full p-5 flex flex-col gap-10`}>
-            <div className={`${locationDatas && locationDatas.length>0?"":"hidden"}`}>
+              <div className={`p-5 flex flex-col gap-10 overflow-auto w-full`} >
+            <div className={`w-full ${locationDatas && locationDatas.length>0?"":"hidden"}`}>
             <div className="font-bold text-md h-10 text-grayscale">Sub Locations</div>
-            <Table colResize={true} rowResize={true} RowValues={locationDatas} rowHeights={60} ColumnNames={locatoinHeders}/>
+            <Table colResize={true} rowResize={true} RowValues={locationDatas} rowHeights={80} ColumnNames={locatoinHeders}/>
             {/* <TableViewChildren/>
              <TableViewProducts/>*/}
             </div>
-            <div>
+            <div className={`w-full`}>
             <div className={`font-bold text-md h-10 text-grayscale`}>
             Inventory
             </div>
-            <Table className="" rowHeights={80} RowValues={inventoryItems} ColumnNames={inventoryHeaders} colResize={true}/>
+            <Table rowHeights={80} RowValues={inventoryItems} rowResize={true} ColumnNames={inventoryHeaders} colResize={true}/>
             </div>
             </div>
            </div>

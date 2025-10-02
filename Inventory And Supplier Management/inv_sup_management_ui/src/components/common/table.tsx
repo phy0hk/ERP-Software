@@ -1,12 +1,14 @@
 import {TableType,TableCellType} from "../../utils/TypesList.ts"
 import {useState,useEffect,useRef,React} from "react"
 
-export function Table({ColumnNames,RowValues,className,TableWidth=1000,rowHeight,colResize=false,rowResize=false}:TableType){
+export function Table({ColumnNames,RowValues,className,rowHeight,colResize=false,rowResize=false}:TableType){
+  
   const [colLength,setColLength] = useState(0);
   const [rowLength,setRowLength] = useState(0);
   const [colWidths,setColWidths] = useState<number[]>([]);
   const [rowHeights,setRowHeights] = useState<number[]>([40]);
-  
+  const [TableWidth,setTableWidth] = useState<number>(500);
+  const tableRef = useRef();
   useEffect(()=>{
     if(ColumnNames!==undefined && ColumnNames!==null){
       setColLength(ColumnNames.length)
@@ -19,11 +21,11 @@ export function Table({ColumnNames,RowValues,className,TableWidth=1000,rowHeight
     if(ColumnNames){
       setColWidths(new Array(ColumnNames.length).fill(TableWidth/ColumnNames.length))
     }
-  },[ColumnNames])
+  },[ColumnNames,TableWidth])
   useEffect(()=>{
     if(RowValues){
       setRowHeights(new Array(RowValues.length+1).fill(rowHeight | 40))
-    }
+  }
   },[RowValues])
 
   const handleWidthChange = (changedWidth:number,colID:number)=>{
@@ -52,9 +54,23 @@ export function Table({ColumnNames,RowValues,className,TableWidth=1000,rowHeight
     })
   }
 
+useEffect(() => {
+  function handleResize() {
+    if (tableRef.current) {
+      setTableWidth(tableRef.current.offsetWidth);      
+    }
+  }
+  // run once initially
+  handleResize();
+
+  window.addEventListener("resize", handleResize);
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
+
+
   return (
-    <div className={`flex flex-col ${className}`}>
-     <div className={`flex flex-row w`}>
+    <div className={`flex flex-col ${className}`} ref={tableRef}>
+     <div className={`flex flex-row`}>
      {ColumnNames && ColumnNames.map((item,index)=>{
        return (<TableCell rowID={0} colID={index} key={index} className={"font-semibold"} width={colWidths[index]} colResize={colResize} height={40} lastColID={colLength} onWidthChange={(changed)=>handleWidthChange(changed,index)} lastRowID={rowLength} value={item}/>)
      })}
@@ -135,7 +151,7 @@ function heightChange(changedHeight:number){
 }
 
   return (
-    <div className={`relative px-3 py-2 overflow-hidden  ${className}`} style={{width,height}}>
+    <div className={`relative px-3 py-2 overflow-hidden ${className}`} style={{width,height}}>
     {/*top border*/}
       <div className={`absolute top-0 left-0 right-0 h-2 border-grayscale border-t-1 select-none ${rowID===0?"":"hidden"}`}></div>
 {/*bottom border*/}
