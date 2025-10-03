@@ -15,6 +15,24 @@ else
 endif
 argglobal
 %argdel
+let s:save_splitbelow = &splitbelow
+let s:save_splitright = &splitright
+set splitbelow splitright
+wincmd _ | wincmd |
+split
+1wincmd k
+wincmd w
+let &splitbelow = s:save_splitbelow
+let &splitright = s:save_splitright
+wincmd t
+let s:save_winminheight = &winminheight
+let s:save_winminwidth = &winminwidth
+set winminheight=0
+set winheight=1
+set winminwidth=0
+set winwidth=1
+exe '1resize ' . ((&lines * 44 + 33) / 66)
+exe '2resize ' . ((&lines * 19 + 33) / 66)
 argglobal
 enew
 setlocal foldmethod=manual
@@ -25,6 +43,30 @@ setlocal foldlevel=0
 setlocal foldminlines=1
 setlocal foldnestmax=20
 setlocal foldenable
+wincmd w
+argglobal
+if bufexists(fnamemodify("term://~/Programming/ERP-Software//3257:/bin/zsh", ":p")) | buffer term://~/Programming/ERP-Software//3257:/bin/zsh | else | edit term://~/Programming/ERP-Software//3257:/bin/zsh | endif
+if &buftype ==# 'terminal'
+  silent file term://~/Programming/ERP-Software//3257:/bin/zsh
+endif
+setlocal foldmethod=manual
+setlocal foldexpr=0
+setlocal foldmarker={{{,}}}
+setlocal foldignore=#
+setlocal foldlevel=0
+setlocal foldminlines=1
+setlocal foldnestmax=20
+setlocal foldenable
+let s:l = 248 - ((18 * winheight(0) + 9) / 19)
+if s:l < 1 | let s:l = 1 | endif
+keepjumps exe s:l
+normal! zt
+keepjumps 248
+normal! 03|
+wincmd w
+2wincmd w
+exe '1resize ' . ((&lines * 44 + 33) / 66)
+exe '2resize ' . ((&lines * 19 + 33) / 66)
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
@@ -32,6 +74,8 @@ endif
 unlet! s:wipebuf
 set winheight=1 winwidth=20
 let &shortmess = s:shortmess_save
+let &winminheight = s:save_winminheight
+let &winminwidth = s:save_winminwidth
 let s:sx = expand("<sfile>:p:r")."x.vim"
 if filereadable(s:sx)
   exe "source " . fnameescape(s:sx)
