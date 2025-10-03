@@ -7,6 +7,7 @@ export default function WarehouseSideBar({Tree,visible=false,onClose,onSelect}:{
 const WarehouseSideBarRef = useRef<HTMLDivElement | null>(null);
 const startX = useRef<number>(0);
 const [width,setWidth] = useState(300);
+const startWidth = useRef<number>(0);
 
   const handleClose = () =>{
     if(onClose!==undefined){
@@ -21,17 +22,23 @@ if(onSelect!==undefined){
 
 const handleMouseDown = (e:React.MouseEvent) =>{
   startX.current = e.clientX;
+startWidth.current = width;
+document.body.classList.add("cursor-col-resize");
  window.addEventListener("mousemove",handleMouseMove);
  window.addEventListener("mouseup",handleMouseUp);
 }
 const handleMouseMove = (e:React.MouseEvent)=>{
-  const changed = e.clientX - startX.current;
-  startX.current = e.clientX;
-  if(width+changed>300){
- setWidth((prev)=>prev+changed);
+  const changed:number = e.clientX - startX.current;
+  const newWidth:number = startWidth.current+(changed*2);
+  console.log(changed);
+  if(newWidth>300){
+ setWidth(newWidth);
   }
+  startX.current = e.clientX;
+  startWidth.current = newWidth;
 }
 const handleMouseUp = (e:React.MouseEvent)=>{
+document.body.classList.remove("cursor-col-resize");
   window.removeEventListener("mousemove",handleMouseMove);
   window.removeEventListener("mouseup",handleMouseUp);
 }

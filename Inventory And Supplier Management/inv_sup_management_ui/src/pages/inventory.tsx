@@ -7,9 +7,15 @@ import WarehouseSideBar from "../components/inventory/WarehouseSideBar"
 import {Table} from "../components/common/table"
 import useWasm from "../utils/wasmLoader"
 import {toWasmLocationType,toJsLocationType} from "../utils/TypeConvertor"
+import AddNewLocPopUp from "../components/inventory/newLocationAdd"
+import type {RootState} from "../utils/globalStats/store"
+import {useSelector,useDispatch} from "react-redux";
+import {setBigTree,setAllLocations} from "../utils/globalStats/slices/inventorySlice"
 export default function InventoryPage(){
-  const [BigTree,setBigTree] = useState<LocationType[]>([]);
-  const [AllLocationsList,setAllLocationsList] = useState<LocationType[]>([])
+  const dispatch = useDispatch();
+  const [tempTree,setTempTree] = useState<LocationType[]>([]);
+  const BigTree:LocationType[] = useSelector((state:RootState)=>state.inventory.BigTree);
+  const AllLocationsList = useSelector((state:RootState)=>state.inventory.AllLocations);
   const [locationDatas,setLocationDatas] = useState<string[][]|null|undefined>(null);
   const [sideOpen,setSideOpen] = useState<boolean>(false);
   const [selectedLocation,setSelectedLocation] = useState<number|null>(null);
@@ -25,7 +31,7 @@ export default function InventoryPage(){
       try {
           const resJson = await res.json();
           const datas:LocationType[] = resJson.data;
-          setAllLocationsList(datas)
+          dispatch(setAllLocations(datas))
       } catch (error) {
           console.log(error);
           return;
@@ -45,6 +51,7 @@ export default function InventoryPage(){
   useEffect(()=>{
     if(inventoryWASM!==null && inventoryWASM!== undefined && AllLocationsList.length>0){
    plantBigTree();
+   
     }
   },[inventoryWASM,AllLocationsList])
 
@@ -60,12 +67,17 @@ export default function InventoryPage(){
             AllLocationWasmList.push_back(await toWasmLocationType(item))
           };
           const jsonBigTree:LocationType[] = [];
-          const createdTree = inventoryWASM.PlantTree(filteredWasmList,AllLocationWasmList);
+          const createdTree = inventoryWASM.PlantTree(filteredWasmList,AllLocationWasmList);          
           for(let i=0;i<createdTree.size();i++){
             jsonBigTree.push(await toJsLocationType(createdTree.get(i)));
           }
-          setBigTree(jsonBigTree);
+          
+          // setBigTree(jsonBigTree);
+          setTempTree(jsonBigTree)
   }
+  useEffect(()=>{
+dispatch(setBigTree(tempTree))
+  },[tempTree])
   // function PlantTree(Locations:LocationType[],AllLocations:LocationType[]):LocationType[]{
   //     return Locations.map((parent)=>{
   //         const children:LocationType[] = AllLocations.filter(item=>item.parentId===parent.id)
@@ -165,14 +177,12 @@ console.log(parentTableRef.current.offsetWidth);
 const handleSidebarClose = ()=>{
 setSideOpen(!sideOpen);
 }
-useEffect(() => {
-  console.log(DynamicTableWidth);
-  
-}, [DynamicTableWidth])
+
 
 
   return(
         <RootLayout>
+        <AddNewLocPopUp/>
             <div className="w-screen h-[100vh] scrollbar-hide relative flex flex-row">
               <WarehouseSideBar visible={sideOpen} onClose={handleSidebarClose} onSelect={fetchChildLocations} Tree={BigTree} />
               <div className={`p-5 flex flex-col gap-10 overflow-auto w-full`} >

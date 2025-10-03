@@ -44,7 +44,10 @@ export async function toJsLocationType(obj:any):Promise<LocationType>{
     Loc.created_at = obj.created_at;
     Loc.updated_at = obj.updated_at;
     const tempChild:LocationType[] = [];
-    for(let i = 0;i<obj.children.size();i++){
+    const childrenSize:number = obj.children.size();
+   
+    for(let i = 0;i<obj.children.size();i++){     
+
       toJsLocationType(obj.children.get(i)).then((data)=>{
         tempChild.push(data);
       })

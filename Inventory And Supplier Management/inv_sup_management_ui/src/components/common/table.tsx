@@ -65,7 +65,7 @@ useEffect(() => {
 
   window.addEventListener("resize", handleResize);
   return () => window.removeEventListener("resize", handleResize);
-}, []);
+}, [RowValues]);
 
 
   return (
@@ -105,13 +105,19 @@ const DragSide= useRef<string|null>(null);
 
 const handleMouseDown = (e:React.MouseEvent,Side:string) =>{  
   startPos.current = {x:e.clientX,y:e.clientY}
-  DragSide.current = Side
-  window.addEventListener("mousemove",handleMouseMove);
+  DragSide.current = Side;
+  if(Side==="Right"){
+ document.body.classList.add("cursor-col-resize");
+  }if(Side==="Bottom"){
+    document.body.classList.add("cursor-row-resize");
+  }
+   window.addEventListener("mousemove",handleMouseMove);
   window.addEventListener("mouseup",handleMouseUp);
 }
 
 const handleMouseUp = (e:React.MouseEvent)=>{
-  DragSide.current = null
+  DragSide.current = null;
+  document.body.classList.remove("cursor-row-resize","cursor-col-resize");
   window.removeEventListener("mousemove",handleMouseMove);
   window.removeEventListener("mouseup",handleMouseUp);
 }
@@ -140,13 +146,13 @@ heightChange(changedPosY)
 
 function widthChange(changedWidth:number){
 if(onWidthChange!==undefined){
-  onWidthChange(changedWidth)
+  onWidthChange(changedWidth*1.05)
 }
 }
 
 function heightChange(changedHeight:number){
   if(onHeightChange!==undefined){
-    onHeightChange(changedHeight)
+    onHeightChange(changedHeight*1.05)
   }
 }
 

@@ -2,7 +2,7 @@ import {configureStore} from "@reduxjs/toolkit"
 import {InventorySlice} from "./slices/inventorySlice"
 export const store = configureStore({
   reducer:{
-    InventorySlice
+    inventory:InventorySlice.reducer
   }
 })
 export type RootState = ReturnType<typeof store.getState>;

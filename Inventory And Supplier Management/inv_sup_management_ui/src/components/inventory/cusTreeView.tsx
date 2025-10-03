@@ -2,7 +2,11 @@ import {SimpleTreeView, TreeItem} from '@mui/x-tree-view'
 import type { LocationType } from '../../utils/TypesList'
 import { cabinetFiling } from '@lucide/lab';
 import {useState} from "react"
+import {useDispatch,useSelector} from "react-redux"
+import type {RootState} from "../../utils/globalStats/store"
+import {setAddNewLocPopUpVisible} from "../../utils/globalStats/slices/inventorySlice" 
 import { BetweenHorizontalStart, ChevronDown, ChevronUp, Container, Dot, Icon, Warehouse,Plus} from 'lucide-react'
+import {useEffect} from "react"
 export default function CusTreeView({Data,onSelect}:props){
   const handleOnSelect = (event:React.SyntheticEvent,nodeId) => {
     if(onSelect!==undefined){
@@ -38,11 +42,16 @@ function IconSelector(type:string|undefined){
     }
 }
 
-function CustomTreeItem({type,name}:LocationType){
-    return(
+function CustomTreeItem(location:LocationType){
+  const dispatch = useDispatch();
+  const handleOnClick = () =>{
+    dispatch(setAddNewLocPopUpVisible(true));
+  }  
+
+  return(
         <div className='flex flex-row gap-2 items-center group justify-between'>
-            <div className="flex flex-row items-center">{IconSelector(type)}<span>{name}</span></div>
-            <Plus className="hidden group-hover:inline-block"/>
+            <div className="flex flex-row items-center">{IconSelector(location.type)}<span>{location.name}</span></div>
+            <Plus className="hidden group-hover:inline-block rounded hover:bg-black/10" onClick={handleOnClick} />
         </div>
     )
 }
