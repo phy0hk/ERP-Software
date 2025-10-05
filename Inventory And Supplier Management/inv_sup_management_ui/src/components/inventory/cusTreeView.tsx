@@ -4,7 +4,7 @@ import { cabinetFiling } from '@lucide/lab';
 import {useState} from "react"
 import {useDispatch,useSelector} from "react-redux"
 import type {RootState} from "../../utils/globalStats/store"
-import {setAddNewLocPopUpVisible} from "../../utils/globalStats/slices/inventorySlice" 
+import {setAddNewLocPopUp} from "../../utils/globalStats/slices/inventorySlice" 
 import { BetweenHorizontalStart, ChevronDown, ChevronUp, Container, Dot, Icon, Warehouse,Plus} from 'lucide-react'
 import {useEffect} from "react"
 export default function CusTreeView({Data,onSelect}:props){
@@ -45,7 +45,7 @@ function IconSelector(type:string|undefined){
 function CustomTreeItem(location:LocationType){
   const dispatch = useDispatch();
   const handleOnClick = () =>{
-    dispatch(setAddNewLocPopUpVisible(true));
+    dispatch(setAddNewLocPopUp({isOpen:true,selectedItem:location}));
   }  
 
   return(

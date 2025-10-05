@@ -3,13 +3,19 @@ import type {LocationType} from "../../TypesList"
 export interface InventoryStates{
   AllLocations:LocationType[],
   BigTree:LocationType[],
-  AddNewLocPopUpVisible:boolean,
+  AddNewLocPopUp:{
+    isOpen:boolean,
+    selectedItem?:LocationType
+  },
 }
 
 export const initialState:InventoryStates = {
   AllLocations:[],
   BigTree:[],
-  AddNewLocPopUpVisible:false,
+  AddNewLocPopUp:{
+    isOpen:false,
+    selectedItem:{id:0,name:"None"}
+  },
 }
 export const InventorySlice = createSlice({
   name:"InventorySlice",
@@ -18,8 +24,8 @@ export const InventorySlice = createSlice({
     setAllLocations(state,action:PayloadAction<LocationType[]>){
       state.AllLocations = action.payload;
     },
-    setAddNewLocPopUpVisible(state,action:PayloadAction<boolean>){
-      state.AddNewLocPopUpVisible = action.payload;
+    setAddNewLocPopUp(state,action:PayloadAction<InventoryStates.AddNewLocPopUp>){
+      state.AddNewLocPopUp = action.payload;
     },
     setBigTree(state,action:PayloadAction<LocationType[]>){
       state.BigTree = action.payload;
@@ -29,7 +35,7 @@ export const InventorySlice = createSlice({
 
 export const {
   setAllLocations,
-  setAddNewLocPopUpVisible,
+  setAddNewLocPopUp,
   setBigTree
 } = InventorySlice.actions;
 
